@@ -29,6 +29,8 @@
   "files": [
     "dist",
     "src",
+    "agents",
+    "scripts/install-agent.js",
     "README.md",
     "LICENSE",
     "config/claude-desktop-config.json"
@@ -42,6 +44,7 @@
     "test:unit": "echo 'No unit tests yet'",
     "test:integration": "tsx test/search-quality.test.ts",
     "lint": "tsc --noEmit",
+    "postinstall": "node scripts/install-agent.js",
     "prepublishOnly": "npm run build && npm run test",
     "version": "git add -A src",
     "postversion": "git push && git push --tags"

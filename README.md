@@ -1,13 +1,42 @@
-# Claude-Self-Reflect (CSR) - Conversation Memory for Claude Desktop
+# Claude-Self-Reflect (CSR) - Conversation Memory for Claude Code & Claude Desktop
 
-A streamlined implementation of conversation memory using Qdrant vector database and MCP (Model Context Protocol). This replaces the complex Neo4j graph-based approach with a simpler, more maintainable semantic search solution.
+Give your AI perfect memory across all conversations. Claude-Self-Reflect provides semantic search over your entire conversation history using Qdrant vector database and MCP (Model Context Protocol).
+
+## 🚀 Installation
+
+### For Claude Code (Recommended)
+```bash
+npm install -g claude-self-reflect
+```
+
+This automatically installs a `@reflection` agent in your project. Use it to search conversations:
+```
+@reflection what did we discuss about API design?
+@reflection find our previous work on authentication
+```
+
+### For Claude Desktop
+Add to your Claude Desktop config:
+```json
+{
+  "mcpServers": {
+    "claude-self-reflect": {
+      "command": "npx",
+      "args": ["claude-self-reflect"],
+      "env": {
+        "QDRANT_URL": "http://localhost:6333"
+      }
+    }
+  }
+}
+```
 
 ## Architecture Overview
 
 ![Architecture Diagram](docs/diagrams/architecture.png)
 
 The system consists of four main components:
-- **Claude Desktop**: The MCP client that requests memory operations
+- **Claude Code/Desktop**: The MCP client that requests memory operations
 - **MCP Server**: TypeScript service providing search and store tools
 - **Import Pipeline**: Python service that processes conversation logs
 - **Qdrant Database**: Vector storage with semantic search capabilities
@@ -31,53 +60,60 @@ See also:
 - Provides fast semantic similarity search
 - Built-in vector indexing and retrieval
 
-### 2. Qdrant MCP Server
-- **Tool 1**: `qdrant-store` - Store conversation memories
-- **Tool 2**: `qdrant-find` - Retrieve relevant memories by semantic search
-- No complex entity extraction or relationship mapping
+### 2. MCP Server for Conversation Memory
+- **Tool 1**: `store_reflection` - Store important insights and decisions
+- **Tool 2**: `reflect_on_past` - Search through conversation history
+- Simple semantic search without complex entity extraction
 
 ### 3. Python Importer
-- Reads JSONL files from Claude Desktop logs
+- Reads JSONL files from Claude conversation logs
 - Creates conversation chunks for context
 - Generates embeddings using sentence-transformers
 - Stores directly in Qdrant with metadata
 
 ## Quick Start
 
-1. **Start the services:**
+### 1. Install Qdrant (if not already running)
 ```bash
-docker compose up -d
+docker run -d --name qdrant -p 6333:6333 qdrant/qdrant:latest
 ```
 
-2. **Run initial import:**
+### 2. Import Your Conversations
 ```bash
-docker compose run --rm importer
+# Clone this repository
+git clone https://github.com/ramakay/claude-self-reflect.git
+cd claude-self-reflect
+
+# Install dependencies
+pip install -r scripts/requirements.txt
+
+# Run import
+python scripts/import-openai-enhanced.py
 ```
 
-3. **Configure Claude Desktop:**
-Add to your Claude Desktop config:
-```json
-{
-  "mcpServers": {
-    "qdrant-memory": {
-      "command": "docker",
-      "args": ["compose", "exec", "-T", "qdrant-mcp", "mcp-server-qdrant"],
-      "cwd": "/path/to/qdrant-mcp-stack"
-    }
-  }
-}
+### 3. Start Using
+The reflection agent is automatically available in Claude Code after installation.
+
+## Using the Reflection Agent
+
+### In Claude Code
+Once installed, the `@reflection` agent helps you search conversation history:
+
+```
+@reflection what did we discuss about database design?
+@reflection find our previous debugging session
+@reflection check if we've solved this error before
 ```
 
-## Usage Examples
+### Direct Tool Usage (Advanced)
+You can also ask Claude to search directly:
 
-### Store a memory:
 ```
-Claude: Use the qdrant-store tool to remember "We discussed implementing a chat memory system using Qdrant instead of Neo4j for simplicity"
-```
+User: Can you check our past conversations about authentication?
+Claude: I'll search through our conversation history about authentication...
 
-### Find memories:
-```
-Claude: Use the qdrant-find tool to search for "chat memory implementation"
+User: Remember that we decided to use JWT tokens for the API
+Claude: I'll store this decision for future reference...
 ```
 
 ## 🧪 Testing & Dry-Run Mode
@@ -160,41 +196,56 @@ python scripts/import-openai-enhanced.py ~/.claude/projects/my-project --dry-run
 python scripts/import-openai-enhanced.py --dry-run | tee import-test.log
 ```
 
-## 🤝 Comparison with Other Solutions
+## 🤝 Why Claude-Self-Reflect?
 
-### Why Claude-Self-Reflect (CSR) Wins
+### Key Advantages
+- **Local-First**: Your conversations stay on your machine
+- **Zero Configuration**: Works out of the box with sensible defaults
+- **Claude-Native**: Built specifically for Claude Code & Desktop  
+- **Semantic Search**: Understands meaning, not just keywords
+- **Continuous Import**: Automatically indexes new conversations
+- **Privacy-Focused**: No data leaves your local environment
 
-| Feature | Claude-Self-Reflect | mem0 | Langchain Memory | Custom Solutions |
-|---------|------------------------|------|------------------|------------------|
-| **Setup Time** | 5 minutes | 30+ minutes | 1+ hours | Days |
-| **Claude Desktop Integration** | ✅ Native MCP | ❌ Manual | ❌ Not supported | ❌ Complex |
-| **Semantic Search** | ✅ State-of-art | ✅ Basic | ✅ Good | ❓ Varies |
-| **Auto-Import** | ✅ Continuous | ❌ Manual | ❌ Manual | ❌ Manual |
-| **Privacy** | ✅ 100% Local | ❌ Cloud | ❓ Depends | ✅ Local |
-| **Production Ready** | ✅ Yes | ⚠️ Beta | ✅ Yes | ❌ No |
+### Technical Features
+- **Vector Database**: Qdrant for fast semantic search
+- **Multiple Embeddings**: Support for Voyage AI, OpenAI, or local models
+- **Per-Project Collections**: Isolated memory per project
+- **Cross-Project Search**: Find information across all projects when needed
+- **Incremental Updates**: Only process new conversations
 
-### Our Secret Sauce 🌟
+### CLAUDE.md vs Claude-Self-Reflect
 
-1. **MCP-First Design** - Built specifically for Claude Desktop, not retrofitted
-2. **Conversation-Aware Chunking** - Preserves context across messages
-3. **Cross-Project Search** - Search all your projects simultaneously  
-4. **Zero-Config Import** - Automatically finds and imports all conversations
-5. **Continuous Learning** - Watches for new conversations in real-time
+| Aspect | CLAUDE.md | Claude-Self-Reflect |
+|--------|-----------|-------------------|
+| **Purpose** | Project-specific instructions | Conversation memory across all projects |
+| **Scope** | Single project context | Global conversation history |
+| **Storage** | Text file in project | Vector database (Qdrant) |
+| **Search** | Exact text matching | Semantic similarity search |
+| **Updates** | Manual editing | Automatic indexing |
+| **Best For** | Project rules & guidelines | Finding past discussions & decisions |
 
-## 🧑‍💻 For Developers
+**Use both together**: CLAUDE.md for project-specific rules, Claude-Self-Reflect for conversation history.
 
-### NPM Package
+## 🧑‍💻 Advanced Configuration
 
+### Environment Variables
 ```bash
-npm install claude-self-reflect
+# Embedding Provider (choose one)
+VOYAGE_API_KEY=your-key      # Recommended: Best quality
+OPENAI_API_KEY=your-key      # Alternative: Good quality
+USE_LOCAL_EMBEDDINGS=true    # Free: Lower quality
+
+# Qdrant Configuration
+QDRANT_URL=http://localhost:6333  # Default local Qdrant
 ```
 
+### Programmatic Usage
 ```javascript
 import { ClaudeSelfReflect } from 'claude-self-reflect';
 
 const memory = new ClaudeSelfReflect({
   qdrantUrl: 'http://localhost:6333',
-  embeddingProvider: 'voyage', // or 'openai' or 'local'
+  embeddingProvider: 'voyage',
   apiKey: process.env.VOYAGE_API_KEY
 });
 
@@ -304,7 +355,8 @@ npm test -- --grep "search quality"
 <details>
 <summary><b>Claude can't find the MCP server</b></summary>
 
-1. Restart Claude Desktop after installation
+1. The reflection agent is automatically available after installation
+2. For Claude Desktop, restart after configuration
 2. Check if the config was added: `cat ~/Library/Application\ Support/Claude/claude_desktop_config.json`
 3. Ensure Docker is running: `docker ps`
 4. Check MCP server logs: `docker compose logs claude-self-reflection`
