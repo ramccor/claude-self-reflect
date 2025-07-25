@@ -384,6 +384,5 @@ async function main() {
 // Export for use in other tests
 export { SearchQualityTester, TestQuery, TestResult };
 
-if (require.main === module) {
-  main();
-}
+// Run tests if executed directly
+main().catch(console.error);
