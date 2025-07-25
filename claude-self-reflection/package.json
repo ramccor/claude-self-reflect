@@ -1,5 +1,5 @@
 {
-  "name": "claude-self-reflection",
+  "name": "claude-self-reflect",
   "version": "1.0.0",
   "description": "Give Claude perfect memory of all your conversations - Semantic search across your entire Claude Desktop history",
   "keywords": [
@@ -13,16 +13,16 @@
     "ai-memory",
     "claude-desktop"
   ],
-  "homepage": "https://github.com/yourusername/claude-self-reflection#readme",
+  "homepage": "https://github.com/ramakay/claude-self-reflect#readme",
   "bugs": {
-    "url": "https://github.com/yourusername/claude-self-reflection/issues"
+    "url": "https://github.com/ramakay/claude-self-reflect/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/yourusername/claude-self-reflection.git"
+    "url": "git+https://github.com/ramakay/claude-self-reflect.git"
   },
   "license": "MIT",
-  "author": "Claude Self-Reflection Contributors",
+  "author": "Claude-Self-Reflect Contributors",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
