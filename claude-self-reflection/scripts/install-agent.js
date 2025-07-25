@@ -49,8 +49,9 @@ async function installAgent() {
     await fs.copyFile(agentSource, agentDest);
     
     console.log('✅ Reflection agent installed at .claude/agents/reflection.md');
-    console.log('💡 Use it in Claude Code with: @reflection <your query>');
-    console.log('   Example: @reflection what did we discuss about API design?');
+    console.log('💡 The agent will activate when you ask about past conversations');
+    console.log('   Example: "What did we discuss about API design?"');
+    console.log('   Or explicitly: "Use the reflection agent to find..."');
     
   } catch (error) {
     console.error('❌ Error installing reflection agent:', error.message);

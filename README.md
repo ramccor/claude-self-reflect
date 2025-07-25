@@ -9,10 +9,11 @@ Give your AI perfect memory across all conversations. Claude-Self-Reflect provid
 npm install -g claude-self-reflect
 ```
 
-This automatically installs a `@reflection` agent in your project. Use it to search conversations:
+This automatically installs a reflection agent in your project. It will activate when you:
 ```
-@reflection what did we discuss about API design?
-@reflection find our previous work on authentication
+Find our previous discussions about API design
+What did we talk about regarding authentication?
+Check if we've solved this error before
 ```
 
 ### For Claude Desktop
@@ -97,12 +98,17 @@ The reflection agent is automatically available in Claude Code after installatio
 ## Using the Reflection Agent
 
 ### In Claude Code
-Once installed, the `@reflection` agent helps you search conversation history:
+The reflection agent activates automatically when you ask about past conversations:
 
 ```
-@reflection what did we discuss about database design?
-@reflection find our previous debugging session
-@reflection check if we've solved this error before
+"What did we discuss about database design?"
+"Find our previous debugging session"
+"Have we encountered this error before?"
+```
+
+Or explicitly request it:
+```
+"Use the reflection agent to search for our API discussions"
 ```
 
 ### Direct Tool Usage (Advanced)
