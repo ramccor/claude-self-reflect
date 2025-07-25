@@ -90,14 +90,33 @@ npm install -g claude-self-reflect && claude-self-reflect setup
 
 If you prefer manual control:
 
+**1. Start Qdrant Database**
 ```bash
-# 1. Install
+docker run -d --name qdrant -p 6333:6333 qdrant/qdrant:latest
+```
+
+**2. Choose & Configure Embedding Provider**
+```bash
+# Voyage AI (Recommended - 200M tokens FREE)
+export VOYAGE_API_KEY="your-api-key"
+
+# OR Google Gemini (Unlimited FREE)  
+export GEMINI_API_KEY="your-api-key"
+
+# OR OpenAI (No free tier)
+export OPENAI_API_KEY="your-api-key"
+
+# OR Local Processing (Always FREE)
+export USE_LOCAL_EMBEDDINGS=true
+```
+
+**3. Install & Import Conversations**
+```bash
 npm install -g claude-self-reflect
-
-# 2. Interactive setup  
-claude-self-reflect setup
-
-# 3. Or manual steps (see Advanced Configuration section)
+git clone https://github.com/ramakay/claude-self-reflect.git
+cd claude-self-reflect
+pip install -r scripts/requirements.txt
+python scripts/import-openai-enhanced.py
 ```
 
 The reflection agent will activate when you ask:

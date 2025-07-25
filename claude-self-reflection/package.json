@@ -26,11 +26,15 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
+  "bin": {
+    "claude-self-reflect": "./dist/cli.js"
+  },
   "files": [
     "dist",
     "src",
     "agents",
     "scripts/install-agent.js",
+    "scripts/setup-wizard.js",
     "README.md",
     "LICENSE",
     "config/claude-desktop-config.json"
