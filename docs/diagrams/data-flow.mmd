@@ -1,0 +1,36 @@
+%%{init: {'theme':'base', 'themeVariables': {'primaryColor':'#3A539B','primaryTextColor':'#fff','primaryBorderColor':'#2C3E50','lineColor':'#5D6D7E','secondaryColor':'#5DADE2','tertiaryColor':'#E8F6F3'}}}%%
+
+sequenceDiagram
+    participant User
+    participant Claude as Claude Desktop
+    participant MCP as MCP Server
+    participant Qdrant as Qdrant DB
+    participant Import as Import Pipeline
+    participant Voyage as Voyage AI
+
+    Note over User,Voyage: Conversation Search Flow
+    
+    User->>Claude: "What did we discuss about React hooks?"
+    Claude->>MCP: reflect_on_past("React hooks")
+    MCP->>MCP: Generate embedding for query
+    MCP->>Qdrant: Vector similarity search
+    Qdrant->>Qdrant: Find nearest neighbors
+    Qdrant-->>MCP: Return matching chunks
+    MCP->>MCP: Format results
+    MCP-->>Claude: Conversation results
+    Claude-->>User: "I found 3 conversations about React hooks..."
+
+    Note over User,Voyage: Background Import Flow
+    
+    Import->>Import: Discover new JSONL files
+    loop For each conversation file
+        Import->>Import: Read JSONL file
+        Import->>Import: Extract messages
+        Import->>Import: Create conversation chunks
+        Import->>Voyage: Generate embeddings (batch)
+        Voyage-->>Import: Return vectors
+        Import->>Qdrant: Store vectors + metadata
+    end
+    Import->>Import: Update state file
+    
+    Note over Import,Qdrant: Continuous monitoring every 60s

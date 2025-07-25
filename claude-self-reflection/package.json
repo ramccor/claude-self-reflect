@@ -1,0 +1,65 @@
+{
+  "name": "claude-self-reflection",
+  "version": "1.0.0",
+  "description": "Give Claude perfect memory of all your conversations - Semantic search across your entire Claude Desktop history",
+  "keywords": [
+    "claude",
+    "mcp",
+    "model-context-protocol",
+    "semantic-search",
+    "conversation-memory",
+    "qdrant",
+    "vector-search",
+    "ai-memory",
+    "claude-desktop"
+  ],
+  "homepage": "https://github.com/yourusername/claude-self-reflection#readme",
+  "bugs": {
+    "url": "https://github.com/yourusername/claude-self-reflection/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yourusername/claude-self-reflection.git"
+  },
+  "license": "MIT",
+  "author": "Claude Self-Reflection Contributors",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "LICENSE",
+    "config/claude-desktop-config.json"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts",
+    "test": "npm run test:unit && npm run test:integration",
+    "test:unit": "node --experimental-test test/*.test.ts",
+    "test:integration": "node test/search-quality.test.ts",
+    "lint": "tsc --noEmit",
+    "prepublishOnly": "npm run build && npm run test",
+    "version": "git add -A src",
+    "postversion": "git push && git push --tags"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^0.5.0",
+    "@qdrant/js-client-rest": "^1.7.0",
+    "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  }
+}

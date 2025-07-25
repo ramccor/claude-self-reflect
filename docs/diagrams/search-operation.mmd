@@ -1,0 +1,70 @@
+%%{init: {'theme':'base', 'themeVariables': {'primaryColor':'#3A539B','primaryTextColor':'#fff','primaryBorderColor':'#2C3E50','lineColor':'#5D6D7E','secondaryColor':'#5DADE2','tertiaryColor':'#E8F6F3'}}}%%
+
+flowchart LR
+    subgraph "User Query"
+        A[/"What did we discuss<br/>about React hooks?"/]
+    end
+    
+    subgraph "MCP Server Processing"
+        B[Receive Query]
+        C[Detect Embedding<br/>Provider]
+        D{Provider?}
+        E[Voyage AI<br/>API Call]
+        F[OpenAI<br/>API Call]
+        G[Local Model<br/>Computation]
+        H[Query Vector<br/>1024 dimensions]
+    end
+    
+    subgraph "Qdrant Search"
+        I[Cross-Collection<br/>Search]
+        J[HNSW Index<br/>Lookup]
+        K[Cosine Similarity<br/>Calculation]
+        L[Filter by<br/>Threshold ≥0.7]
+        M[Sort by<br/>Score]
+    end
+    
+    subgraph "Result Processing"
+        N[Extract<br/>Metadata]
+        O[Format<br/>Conversations]
+        P[Group by<br/>Project]
+        Q[Return Top<br/>Results]
+    end
+    
+    subgraph "Response"
+        R[/"Found 3 conversations:<br/>1. 'useEffect cleanup'<br/>2. 'Custom hooks patterns'<br/>3. 'useState optimization'"/]
+    end
+    
+    %% Flow
+    A --> B
+    B --> C
+    C --> D
+    D -->|"Voyage"| E
+    D -->|"OpenAI"| F
+    D -->|"Local"| G
+    E --> H
+    F --> H
+    G --> H
+    
+    H --> I
+    I --> J
+    J --> K
+    K --> L
+    L --> M
+    
+    M --> N
+    N --> O
+    O --> P
+    P --> Q
+    
+    Q --> R
+    
+    %% Styling
+    classDef queryStyle fill:#3A539B,stroke:#2C3E50,stroke-width:3px,color:#fff
+    classDef embeddingStyle fill:#58D68D,stroke:#2C3E50,stroke-width:2px,color:#fff
+    classDef searchStyle fill:#5DADE2,stroke:#2C3E50,stroke-width:2px,color:#fff
+    classDef resultStyle fill:#F39C12,stroke:#2C3E50,stroke-width:2px,color:#fff
+    
+    class A,R queryStyle
+    class C,D,E,F,G,H embeddingStyle
+    class I,J,K,L,M searchStyle
+    class N,O,P,Q resultStyle

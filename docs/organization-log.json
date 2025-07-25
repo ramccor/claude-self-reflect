@@ -1,0 +1,47 @@
+[
+  {
+    "timestamp": "2025-07-25T01:45:02.813Z",
+    "originalPath": "/Users/ramakrishnanannaswamy/memento-stack/qdrant-mcp-stack/install.sh",
+    "newPath": "/Users/ramakrishnanannaswamy/memento-stack/qdrant-mcp-stack/scripts/setup/install.sh",
+    "category": "scripts",
+    "subcategory": "setup",
+    "score": 95,
+    "reasoning": "Claude AI: This is a bash installation script that sets up the Qdrant-based memory system for Claude Desktop. It checks system requirements, installs dependencies, configures services, and provides initial setup instructions - all typical setup/installation script activities."
+  },
+  {
+    "timestamp": "2025-07-25T01:52:06.398Z",
+    "originalPath": "/Users/ramakrishnanannaswamy/memento-stack/qdrant-mcp-stack/health-check.sh",
+    "newPath": "/Users/ramakrishnanannaswamy/memento-stack/qdrant-mcp-stack/scripts/checks/health-check.sh",
+    "category": "scripts",
+    "subcategory": "checks",
+    "score": 95,
+    "reasoning": "Claude AI: This is a bash script that performs health checks on various system components (Qdrant, MCP Server, import status, performance metrics, Docker resources). The script's primary function is verification and status checking of the Claude Self-Reflection MCP system."
+  },
+  {
+    "timestamp": "2025-07-25T01:52:55.051Z",
+    "originalPath": "/Users/ramakrishnanannaswamy/memento-stack/qdrant-mcp-stack/backup.sh",
+    "newPath": "/Users/ramakrishnanannaswamy/memento-stack/qdrant-mcp-stack/scripts/database/backup.sh",
+    "category": "scripts",
+    "subcategory": "database",
+    "score": 90,
+    "reasoning": "Claude AI: This is a bash script that creates backups of the Qdrant vector database and associated configuration files. The primary function is database backup operations, including backing up Qdrant data volumes, configurations, and creating metadata about the backup state."
+  },
+  {
+    "timestamp": "2025-07-25T01:53:23.220Z",
+    "originalPath": "/Users/ramakrishnanannaswamy/memento-stack/qdrant-mcp-stack/restore.sh",
+    "newPath": "/Users/ramakrishnanannaswamy/memento-stack/qdrant-mcp-stack/scripts/utilities/restore.sh",
+    "category": "scripts",
+    "subcategory": "utilities",
+    "score": 90,
+    "reasoning": "Claude AI: This is a bash script that restores conversation memory from a backup. It performs data restoration tasks including stopping services, restoring Qdrant data from tar archives, restoring configuration files, and restarting services. While it could fit under 'database' due to Qdrant operations, its primary function is general backup restoration utility work."
+  },
+  {
+    "timestamp": "2025-07-25T02:40:08.788Z",
+    "originalPath": "/Users/ramakrishnanannaswamy/memento-stack/qdrant-mcp-stack/install.sh",
+    "newPath": "/Users/ramakrishnanannaswamy/memento-stack/qdrant-mcp-stack/scripts/setup/install.sh",
+    "category": "scripts",
+    "subcategory": "setup",
+    "score": 95,
+    "reasoning": "Claude AI: This is a bash script (shebang #!/bin/bash) that performs one-command installation and setup of the Claude Self-Reflection MCP system. It checks requirements, installs dependencies, configures services, and sets up the complete environment."
+  }
+]

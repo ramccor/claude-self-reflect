@@ -1,0 +1,60 @@
+%%{init: {'theme':'base', 'themeVariables': {'primaryColor':'#3A539B','primaryTextColor':'#fff','primaryBorderColor':'#2C3E50','lineColor':'#5D6D7E','secondaryColor':'#58D68D','tertiaryColor':'#F39C12'}}}%%
+
+flowchart TD
+    Start([Start Import]) --> Analyze[Analyze Conversation History]
+    
+    Analyze --> Count{Count Files}
+    Count --> |"No new files"| NoWork[Display: All imported!]
+    Count --> |"New files found"| ShowStats[Display Statistics<br/>Total files, estimates]
+    
+    ShowStats --> CreateProgress[Initialize Progress Bars<br/>Projects, Files, Chunks]
+    
+    CreateProgress --> ProjectLoop{For each project}
+    
+    ProjectLoop --> |"Next project"| CheckCollection[Ensure Qdrant Collection]
+    CheckCollection --> FileLoop{For each JSONL file}
+    
+    FileLoop --> |"Next file"| CheckImported{Already imported?}
+    CheckImported --> |"Yes"| FileLoop
+    CheckImported --> |"No"| ReadFile[Read JSONL file<br/>Show: 📄 filename]
+    
+    ReadFile --> ExtractMessages[Extract messages<br/>Filter valid content]
+    ExtractMessages --> HasMessages{Has messages?}
+    
+    HasMessages --> |"No"| UpdateFileProgress[Update file progress]
+    HasMessages --> |"Yes"| CreateChunks[Create conversation chunks<br/>Show: ✂️ Creating chunks]
+    
+    CreateChunks --> BatchLoop{For each batch}
+    
+    BatchLoop --> |"Next batch"| GenerateEmbeddings[Generate embeddings<br/>Show: 🤖 Generating]
+    GenerateEmbeddings --> UploadQdrant[Upload to Qdrant<br/>Show: ⬆️ Uploading]
+    UploadQdrant --> UpdateChunkProgress[Update chunk progress<br/>Show speed, total]
+    
+    UpdateChunkProgress --> RateLimit{More batches?}
+    RateLimit --> |"Yes"| Delay[Rate limit delay<br/>Show: ⏳ Waiting]
+    Delay --> BatchLoop
+    RateLimit --> |"No"| SaveState[Save import state]
+    
+    SaveState --> UpdateFileProgress
+    UpdateFileProgress --> FileLoop
+    
+    FileLoop --> |"All files done"| UpdateProjectProgress[Update project progress<br/>Calculate ETA]
+    UpdateProjectProgress --> ProjectLoop
+    
+    ProjectLoop --> |"All projects done"| Summary[Display Final Statistics<br/>Time, chunks, speed]
+    
+    Summary --> ShowNext[Show next steps<br/>Restart Claude, etc.]
+    ShowNext --> End([End])
+    
+    NoWork --> End
+    
+    %% Styling
+    classDef processStyle fill:#5DADE2,stroke:#2C3E50,stroke-width:2px,color:#fff
+    classDef decisionStyle fill:#F39C12,stroke:#2C3E50,stroke-width:2px,color:#fff
+    classDef progressStyle fill:#58D68D,stroke:#2C3E50,stroke-width:2px,color:#fff
+    classDef displayStyle fill:#BB8FCE,stroke:#2C3E50,stroke-width:2px,color:#fff
+    
+    class ReadFile,ExtractMessages,CreateChunks,GenerateEmbeddings,UploadQdrant processStyle
+    class Count,CheckImported,HasMessages,BatchLoop,RateLimit,FileLoop,ProjectLoop decisionStyle
+    class UpdateFileProgress,UpdateChunkProgress,UpdateProjectProgress,SaveState progressStyle
+    class ShowStats,CreateProgress,Delay,Summary,ShowNext,NoWork displayStyle

@@ -1,0 +1,80 @@
+version: '3.8'
+
+services:
+  # Qdrant vector database - the heart of semantic search
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: claude-reflection-qdrant
+    ports:
+      - "${QDRANT_PORT:-6333}:6333"
+    volumes:
+      - ./data/qdrant:/qdrant/storage
+    environment:
+      - QDRANT__LOG_LEVEL=INFO
+      - QDRANT__SERVICE__HTTP_PORT=6333
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6333/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    mem_limit: ${QDRANT_MEMORY:-1g}
+    memswap_limit: ${QDRANT_MEMORY:-1g}
+
+  # One-time import service (runs once then exits)
+  importer:
+    build:
+      context: .
+      dockerfile: Dockerfile.importer
+    container_name: claude-reflection-importer
+    depends_on:
+      qdrant:
+        condition: service_healthy
+    volumes:
+      - ${CLAUDE_LOGS_PATH:-~/.claude/projects}:/logs:ro
+      - ./config:/config
+      - ./scripts:/scripts:ro
+    environment:
+      - QDRANT_URL=http://qdrant:6333
+      - STATE_FILE=/config/imported-files.json
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - VOYAGE_API_KEY=${VOYAGE_API_KEY}
+      - USE_LOCAL_EMBEDDINGS=${USE_LOCAL_EMBEDDINGS:-false}
+      - EMBEDDING_MODEL=${EMBEDDING_MODEL:-voyage-3}
+      - BATCH_SIZE=${BATCH_SIZE:-50}
+      - CHUNK_SIZE=${CHUNK_SIZE:-10}
+      - PYTHONUNBUFFERED=1
+    restart: "no"
+    profiles: ["import"]
+    command: python /scripts/import-openai.py
+
+  # Continuous watcher service (optional)
+  watcher:
+    build:
+      context: .
+      dockerfile: Dockerfile.watcher
+    container_name: claude-reflection-watcher
+    depends_on:
+      qdrant:
+        condition: service_healthy
+    volumes:
+      - ${CLAUDE_LOGS_PATH:-~/.claude/projects}:/logs:ro
+      - ./config:/config
+      - ./scripts:/scripts:ro
+    environment:
+      - QDRANT_URL=http://qdrant:6333
+      - STATE_FILE=/config/imported-files.json
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - VOYAGE_API_KEY=${VOYAGE_API_KEY}
+      - USE_LOCAL_EMBEDDINGS=${USE_LOCAL_EMBEDDINGS:-false}
+      - EMBEDDING_MODEL=${EMBEDDING_MODEL:-voyage-3}
+      - WATCH_INTERVAL=${WATCH_INTERVAL:-60}
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+    profiles: ["watch"]
+    mem_limit: 256m
+    memswap_limit: 256m
+
+networks:
+  default:
+    name: claude-reflection-network

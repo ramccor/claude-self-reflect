@@ -1,0 +1,61 @@
+%%{init: {'theme':'base', 'themeVariables': {'primaryColor':'#3A539B','primaryTextColor':'#fff','primaryBorderColor':'#2C3E50','lineColor':'#5D6D7E','secondaryColor':'#5DADE2','tertiaryColor':'#E8F6F3','noteTextColor':'#1A1A1A','noteBkgColor':'#FCF3CF','actorTextColor':'#1A1A1A'}}}%%
+
+flowchart TB
+    subgraph "Claude Desktop"
+        A[Claude Desktop<br/>Application]
+        B[MCP Client<br/>Protocol Handler]
+    end
+    
+    subgraph "Local File System"
+        C[.claude/projects/<br/>JSONL Files]
+    end
+    
+    subgraph "Claude Self-Reflection MCP"
+        D[MCP Server<br/>TypeScript/Node.js]
+        E[Search Tool<br/>reflect_on_past]
+        F[Store Tool<br/>store_reflection]
+    end
+    
+    subgraph "Import Pipeline"
+        G[Python Importer<br/>import-openai-enhanced.py]
+        H[Voyage AI<br/>Embeddings API]
+        I[Conversation<br/>Chunker]
+    end
+    
+    subgraph "Vector Database"
+        J[Qdrant<br/>Vector DB]
+        K[Collections<br/>conv_*_voyage]
+        L[Semantic<br/>Index]
+    end
+    
+    %% Connections
+    A --> B
+    B <--> D
+    D --> E
+    D --> F
+    
+    C --> G
+    G --> I
+    I --> H
+    H --> J
+    
+    E <--> J
+    F --> J
+    J --> K
+    K --> L
+    
+    %% Styling
+    classDef claudeStyle fill:#3A539B,stroke:#2C3E50,stroke-width:2px,color:#fff
+    classDef vectorStyle fill:#5DADE2,stroke:#2C3E50,stroke-width:2px,color:#fff
+    classDef importStyle fill:#58D68D,stroke:#2C3E50,stroke-width:2px,color:#fff
+    classDef storageStyle fill:#F39C12,stroke:#2C3E50,stroke-width:2px,color:#fff
+    
+    class A,B,D,E,F claudeStyle
+    class J,K,L vectorStyle
+    class G,H,I importStyle
+    class C storageStyle
+    
+    %% Notes
+    D -.->|"MCP Protocol"| B
+    G -.->|"One-time or<br/>Continuous"| C
+    H -.->|"1024-dim<br/>vectors"| J

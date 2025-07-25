@@ -1,0 +1,20 @@
+FROM python:3.11-slim
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies
+RUN pip install --no-cache-dir \
+    qdrant-client \
+    sentence-transformers \
+    numpy
+
+# Copy the import script with proper permissions
+COPY scripts/import-conversations-isolated.py /app/import.py
+RUN chmod +x /app/import.py
+
+WORKDIR /app
+
+# Run the import script
+CMD ["python", "import.py"]

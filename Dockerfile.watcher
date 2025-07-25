@@ -1,0 +1,22 @@
+FROM python:3.11-slim
+
+# Install Python dependencies
+RUN pip install --no-cache-dir \
+    psutil==5.9.5
+
+# Create non-root user
+RUN useradd -m -u 1000 watcher
+
+# Copy scripts
+COPY scripts/import-watcher.py /scripts/
+COPY scripts/streaming-importer.py /scripts/
+RUN chmod +x /scripts/*.py
+
+# Set working directory
+WORKDIR /app
+
+# Switch to non-root user
+USER watcher
+
+# Default command
+CMD ["python", "/scripts/import-watcher.py"]
