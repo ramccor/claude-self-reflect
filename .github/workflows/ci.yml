@@ -115,6 +115,7 @@ jobs:
           --exclude='venv' \
           --exclude='.git' \
           --exclude='data' \
+          --exclude='claude-self-reflection-*.tar.gz' \
           .
     
     - name: Upload Release Asset
