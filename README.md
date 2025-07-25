@@ -69,44 +69,36 @@ Embedding models convert your conversations into numbers that enable semantic se
 
 ### Quick Start (Claude Code)
 
-#### Step 1: Install the MCP Client
 ```bash
+# One command setup - handles everything interactively
+npm install -g claude-self-reflect && claude-self-reflect setup
+```
+
+**That's it!** The interactive setup will:
+1. ✅ Install the reflection agent automatically  
+2. ✅ Guide you through choosing an embedding provider
+3. ✅ Help you get API keys (with direct links)
+4. ✅ Start Qdrant database (via Docker)
+5. ✅ Import your Claude conversation history
+6. ✅ Test that everything works
+
+**💡 What if I don't have Docker?** The setup will detect this and offer alternatives including local-only options.
+
+**🔄 Already installed?** Just run `claude-self-reflect setup` to reconfigure or import new conversations.
+
+### Manual Setup (Advanced Users)
+
+If you prefer manual control:
+
+```bash
+# 1. Install
 npm install -g claude-self-reflect
+
+# 2. Interactive setup  
+claude-self-reflect setup
+
+# 3. Or manual steps (see Advanced Configuration section)
 ```
-This installs the reflection agent in your project automatically.
-
-#### Step 2: Start Qdrant Database  
-```bash
-docker run -d --name qdrant -p 6333:6333 qdrant/qdrant:latest
-```
-
-#### Step 3: Import Your Conversations
-**Why this step?** The reflection agent needs your conversation history to work. Without this, you'll get "No conversations found" when asking about past discussions.
-
-**Choose your provider** (see comparison above), then:
-
-**For Voyage AI (Recommended):**
-```bash
-export VOYAGE_API_KEY="your-voyage-api-key"
-git clone https://github.com/ramakay/claude-self-reflect.git
-cd claude-self-reflect
-pip install -r scripts/requirements.txt
-python scripts/import-openai-enhanced.py
-```
-
-**For Google Gemini:**
-```bash
-export GEMINI_API_KEY="your-gemini-api-key"
-# Same clone and import steps
-```
-
-**For Local Processing:**
-```bash
-export USE_LOCAL_EMBEDDINGS=true
-# Same clone and import steps - no API key needed
-```
-
-**💡 First Time?** Most users with typical conversation history (50-100 conversations) stay within the 200M token free tier of Voyage AI.
 
 The reflection agent will activate when you ask:
 ```
@@ -319,6 +311,38 @@ python scripts/import-openai-enhanced.py --dry-run | tee import-test.log
 **Use both together**: CLAUDE.md for project-specific rules, Claude-Self-Reflect for conversation history.
 
 ## 🧑‍💻 Advanced Configuration
+
+### Manual Setup Steps
+
+If you prefer manual control over the automated setup:
+
+**1. Start Qdrant Database**
+```bash
+docker run -d --name qdrant -p 6333:6333 qdrant/qdrant:latest
+```
+
+**2. Choose & Configure Embedding Provider**
+```bash
+# Voyage AI (Recommended - 200M tokens FREE)
+export VOYAGE_API_KEY="your-api-key"
+
+# OR Google Gemini (Unlimited FREE)  
+export GEMINI_API_KEY="your-api-key"
+
+# OR OpenAI (No free tier)
+export OPENAI_API_KEY="your-api-key"
+
+# OR Local Processing (Always FREE)
+export USE_LOCAL_EMBEDDINGS=true
+```
+
+**3. Import Conversations**
+```bash
+git clone https://github.com/ramakay/claude-self-reflect.git
+cd claude-self-reflect
+pip install -r scripts/requirements.txt
+python scripts/import-openai-enhanced.py
+```
 
 ### Environment Variables
 ```bash
