@@ -1,146 +1,41 @@
-# Claude-Self-Reflect (CSR) - Conversation Memory for Claude Code & Claude Desktop
+# Claude-Self-Reflect - Conversation Memory for Claude
 
-Give your AI perfect memory across all conversations. Claude-Self-Reflect provides semantic search over your entire conversation history using Qdrant vector database and MCP (Model Context Protocol).
+Give Claude perfect memory across all conversations. Semantic search over your entire conversation history using vector database and MCP (Model Context Protocol).
 
-## The Problem, Mechanism & Why
+## Motivation, Alternatives & Past Attempts
 
-### 🤔 The Problem
-Claude has no memory between conversations. Every chat starts from scratch, forcing you to:
-- Re-explain context from previous discussions
-- Repeat solutions you've already discovered together
-- Lose valuable insights from past debugging sessions
-- Search through hundreds of conversation files manually
+**Motivation**: Claude has no memory between conversations. Every chat starts from scratch, requiring you to re-explain context, repeat solutions, and manually search through conversation files.
 
-### ⚡ The Mechanism
-Claude-Self-Reflect creates a **semantic memory layer** that:
+**Our Solution**: A semantic memory layer that automatically indexes your conversations and provides instant search through Claude's native tools.
 
-1. **Imports**: Scans your `~/.claude/projects/` directory for conversation history
-2. **Processes**: Chunks conversations into searchable segments with metadata
-3. **Embeds**: Creates vector representations using Voyage AI or OpenAI embeddings
-4. **Stores**: Saves to Qdrant vector database for fast similarity search
-5. **Searches**: Provides semantic search through MCP tools in Claude
+**Past Attempts**: 
+- Neo4j graph database - Too complex for simple conversation retrieval
+- Keyword search - Missed semantically similar content
+- Manual organization - Doesn't scale with hundreds of conversations
 
-### 🎯 Why This Approach Works
-- **Semantic vs Keyword**: Finds relevant discussions even with different wording
-- **Vector Database**: Purpose-built for similarity search, not complex graph traversal
-- **MCP Integration**: Native Claude tools - no external interfaces needed
-- **Local-First**: Your conversations never leave your machine
-- **Incremental**: Only processes new conversations, not full re-imports
+**Why Qdrant + Vectors**: Industry-standard approach used by LangChain, Dify, and others. Optimized for semantic similarity, not complex relationships.
 
-## 🚀 Choose Your Embedding Provider
+## Glimpse of the Future
 
-Embedding models convert your conversations into numbers that enable semantic search. Choose the option that best fits your needs:
+Imagine asking Claude:
+- "What did we discuss about database design last month?"
+- "Find that debugging solution we discovered together"
+- "Have we encountered this error before?"
 
-### 🥇 Voyage AI (Recommended)
-- ✅ **200M tokens FREE** - covers most users completely  
-- ✅ Best quality for conversation search
-- ✅ Only $0.02/1M tokens after free tier
-- 🔗 [Get API key](https://dash.voyageai.com/)
+And getting instant, accurate answers from your entire conversation history. That's Claude-Self-Reflect.
 
-**Why choose Voyage?** Purpose-built for retrieval tasks, massive free tier means most users never pay.
-
-### 🥈 Google Gemini (Free Alternative)
-- ✅ **Completely FREE** (unlimited usage)
-- ⚠️ Your data used to improve Google products  
-- ✅ Good multilingual support
-- 🔗 [Get API key](https://ai.google.dev/gemini-api/docs)
-
-**Why choose Gemini?** Best for users who want unlimited free usage and don't mind data sharing.
-
-### 🥉 Local Processing (Privacy First)
-- ✅ **Completely FREE**, works offline
-- ✅ No API keys, no data sharing
-- ⚠️ Lower quality results, slower processing
-- 🔗 No setup required
-
-**Why choose Local?** Perfect for privacy-focused users or those who want to avoid any external dependencies.
-
-### 🏅 OpenAI (If You Have Credits)
-- ❌ No free tier
-- ✅ $0.02/1M tokens (same as Voyage paid)  
-- ✅ Good quality, established ecosystem
-- 🔗 [Get API key](https://platform.openai.com/api-keys)
-
-**Why choose OpenAI?** If you already have OpenAI credits or prefer their ecosystem.
-
----
-
-## 🚀 Installation
-
-### Quick Start (Claude Code)
+## Quick Start
 
 ```bash
 # One command setup - handles everything interactively
 npm install -g claude-self-reflect && claude-self-reflect setup
 ```
 
-**That's it!** The interactive setup will:
-1. ✅ Install the reflection agent automatically  
-2. ✅ Guide you through choosing an embedding provider
-3. ✅ Help you get API keys (with direct links)
-4. ✅ Start Qdrant database (via Docker)
-5. ✅ Import your Claude conversation history
-6. ✅ Test that everything works
+**That's it!** The setup wizard will guide you through everything.
 
-**💡 What if I don't have Docker?** The setup will detect this and offer alternatives including local-only options.
-
-**🔄 Already installed?** Just run `claude-self-reflect setup` to reconfigure or import new conversations.
-
-### Manual Setup (Advanced Users)
-
-If you prefer manual control:
-
-**1. Start Qdrant Database**
-```bash
-docker run -d --name qdrant -p 6333:6333 qdrant/qdrant:latest
-```
-
-**2. Choose & Configure Embedding Provider**
-```bash
-# Voyage AI (Recommended - 200M tokens FREE)
-export VOYAGE_API_KEY="your-api-key"
-
-# OR Google Gemini (Unlimited FREE)  
-export GEMINI_API_KEY="your-api-key"
-
-# OR OpenAI (No free tier)
-export OPENAI_API_KEY="your-api-key"
-
-# OR Local Processing (Always FREE)
-export USE_LOCAL_EMBEDDINGS=true
-```
-
-**3. Install & Import Conversations**
-```bash
-npm install -g claude-self-reflect
-git clone https://github.com/ramakay/claude-self-reflect.git
-cd claude-self-reflect
-pip install -r scripts/requirements.txt
-python scripts/import-openai-enhanced.py
-```
-
-The reflection agent will activate when you ask:
-```
-Find our previous discussions about API design
-What did we talk about regarding authentication?
-Check if we've solved this error before
-```
-
-### For Claude Desktop
-Add to your Claude Desktop config:
-```json
-{
-  "mcpServers": {
-    "claude-self-reflect": {
-      "command": "npx",
-      "args": ["claude-self-reflect"],
-      "env": {
-        "QDRANT_URL": "http://localhost:6333"
-      }
-    }
-  }
-}
-```
+- **Need details?** See [Installation Guide](docs/installation-guide.md)
+- **Embedding providers?** See [Embedding Provider Guide](docs/embedding-providers.md)
+- **Manual setup?** See [Advanced Configuration](docs/installation-guide.md#manual-setup-advanced-users)
 
 ## Architecture Overview
 
@@ -299,6 +194,17 @@ python scripts/import-openai-enhanced.py ~/.claude/projects/my-project --dry-run
 python scripts/import-openai-enhanced.py --dry-run | tee import-test.log
 ```
 
+## 🚀 Advanced Features
+
+### Memory Decay (v1.0.0)
+Time-based relevance that prioritizes recent conversations while gradually fading older ones. Like human memory, recent discussions stay vivid while older ones gracefully fade.
+
+- **Smart Recency**: Boost recent conversations in search results
+- **Configurable Decay**: Adjust half-life from days to years
+- **Per-Search Control**: Enable/disable on individual searches
+
+See [Memory Decay Guide](docs/memory-decay.md) for configuration and usage.
+
 ## 🤝 Why Claude-Self-Reflect?
 
 ### Key Advantages
@@ -309,12 +215,6 @@ python scripts/import-openai-enhanced.py --dry-run | tee import-test.log
 - **Continuous Import**: Automatically indexes new conversations
 - **Privacy-Focused**: No data leaves your local environment
 
-### Technical Features
-- **Vector Database**: Qdrant for fast semantic search
-- **Multiple Embeddings**: Support for Voyage AI, OpenAI, or local models
-- **Per-Project Collections**: Isolated memory per project
-- **Cross-Project Search**: Find information across all projects when needed
-- **Incremental Updates**: Only process new conversations
 
 ### CLAUDE.md vs Claude-Self-Reflect
 
@@ -329,249 +229,29 @@ python scripts/import-openai-enhanced.py --dry-run | tee import-test.log
 
 **Use both together**: CLAUDE.md for project-specific rules, Claude-Self-Reflect for conversation history.
 
-## 🧑‍💻 Advanced Configuration
 
-### Manual Setup Steps
 
-If you prefer manual control over the automated setup:
+## Troubleshooting
 
-**1. Start Qdrant Database**
-```bash
-docker run -d --name qdrant -p 6333:6333 qdrant/qdrant:latest
-```
+Having issues? Check our [Troubleshooting Guide](docs/troubleshooting.md) or:
 
-**2. Choose & Configure Embedding Provider**
-```bash
-# Voyage AI (Recommended - 200M tokens FREE)
-export VOYAGE_API_KEY="your-api-key"
+- Ask in [Discussions](https://github.com/ramakay/claude-self-reflect/discussions)
+- Report bugs in [Issues](https://github.com/ramakay/claude-self-reflect/issues)
 
-# OR Google Gemini (Unlimited FREE)  
-export GEMINI_API_KEY="your-api-key"
+## Roadmap
 
-# OR OpenAI (No free tier)
-export OPENAI_API_KEY="your-api-key"
+**Q1 2025**: Conversation summarization, time-based filtering, export history  
+**Q2 2025**: Multi-modal memory, analytics dashboard, team sharing  
+**Long Term**: Active learning, conversation graphs, enterprise features
 
-# OR Local Processing (Always FREE)
-export USE_LOCAL_EMBEDDINGS=true
-```
+[Full Roadmap & Contributing](CONTRIBUTING.md)
 
-**3. Import Conversations**
-```bash
-git clone https://github.com/ramakay/claude-self-reflect.git
-cd claude-self-reflect
-pip install -r scripts/requirements.txt
-python scripts/import-openai-enhanced.py
-```
-
-### Environment Variables
-```bash
-# Embedding Provider (choose one)
-VOYAGE_API_KEY=your-key      # 200M tokens FREE, then $0.02/1M
-GEMINI_API_KEY=your-key      # Unlimited FREE (data shared)
-OPENAI_API_KEY=your-key      # $0.02/1M tokens (no free tier)
-USE_LOCAL_EMBEDDINGS=true    # Always FREE (lower quality)
-
-# Qdrant Configuration
-QDRANT_URL=http://localhost:6333  # Default local Qdrant
-```
-
-### Programmatic Usage
-```javascript
-import { ClaudeSelfReflect } from 'claude-self-reflect';
-
-const memory = new ClaudeSelfReflect({
-  qdrantUrl: 'http://localhost:6333',
-  embeddingProvider: 'voyage',
-  apiKey: process.env.VOYAGE_API_KEY
-});
-
-// Search conversations
-const results = await memory.search('React hooks');
-
-// Store new memory
-await memory.store({
-  content: 'Discussed React performance optimization',
-  metadata: { project: 'my-app', timestamp: Date.now() }
-});
-```
-
-### Contributing
-
-We love contributions! Check out our [Contributing Guide](CONTRIBUTING.md) for:
-
-- 🐛 Bug reports and fixes
-- ✨ Feature requests and implementations
-- 📚 Documentation improvements
-- 🧪 Test coverage expansion
-
-## 🛠️ Advanced Configuration
-
-### Custom Embedding Models
-
-```bash
-# Use OpenAI's latest model
-EMBEDDING_MODEL=text-embedding-3-large
-
-# Use Voyage's latest model  
-EMBEDDING_MODEL=voyage-3
-
-# Use a custom Hugging Face model
-EMBEDDING_MODEL=intfloat/e5-large-v2
-```
-
-### Performance Tuning
-
-```bash
-# For large conversation histories (>10K files)
-BATCH_SIZE=100
-CHUNK_SIZE=20
-WORKERS=8
-
-# For limited memory systems
-BATCH_SIZE=10
-CHUNK_SIZE=5
-QDRANT_MEMORY=512m
-```
-
-### Multi-User Setup
-
-```bash
-# Separate collections per user
-COLLECTION_PREFIX=user_${USER}
-
-# Restrict search to specific projects
-ALLOWED_PROJECTS=work,personal
-```
-
-## 📊 Monitoring & Maintenance
-
-### Health Dashboard
-
-```bash
-# Check system status
-./health-check.sh
-
-# Example output:
-✅ Qdrant: Healthy (1.2M vectors, 24 collections)
-✅ MCP Server: Connected
-✅ Import Queue: 0 pending
-✅ Last Import: 2 minutes ago
-✅ Search Performance: 67ms avg (last 100 queries)
-```
-
-### Useful Commands
-
-```bash
-# Validate entire setup
-python scripts/validate-setup.py
-
-# Test import without making changes
-python scripts/import-openai-enhanced.py --dry-run
-
-# View import progress
-docker compose logs -f importer
-
-# Check collection statistics
-python scripts/check-collections.py
-
-# Test search quality
-npm test -- --grep "search quality"
-
-# Backup your data
-./backup.sh /path/to/backup
-
-# Restore from backup
-./restore.sh /path/to/backup
-```
-
-## 🔧 Troubleshooting
-
-### Common Issues & Solutions
-
-<details>
-<summary><b>Claude can't find the MCP server</b></summary>
-
-1. The reflection agent is automatically available after installation
-2. For Claude Desktop, restart after configuration
-2. Check if the config was added: `cat ~/Library/Application\ Support/Claude/claude_desktop_config.json`
-3. Ensure Docker is running: `docker ps`
-4. Check MCP server logs: `docker compose logs claude-self-reflection`
-
-</details>
-
-<details>
-<summary><b>Search returns no results</b></summary>
-
-1. Verify import completed: `docker compose logs importer | grep "Import complete"`
-2. Check collection has data: `curl http://localhost:6333/collections`
-3. Try lowering similarity threshold: `MIN_SIMILARITY=0.5`
-4. Test with exact phrases from recent conversations
-
-</details>
-
-<details>
-<summary><b>Import is slow or hanging</b></summary>
-
-1. Check available memory: `docker stats`
-2. Reduce batch size: `BATCH_SIZE=10`
-3. Use local embeddings for testing: `USE_LOCAL_EMBEDDINGS=true`
-4. Check for large conversation files: `find ~/.claude/projects -name "*.jsonl" -size +10M`
-
-</details>
-
-<details>
-<summary><b>API key errors</b></summary>
-
-1. Verify your API key is correct in `.env`
-2. Check API key permissions (embeddings access required)
-3. Test API key directly: `curl -H "Authorization: Bearer $VOYAGE_API_KEY" https://api.voyageai.com/v1/models`
-4. Try alternative provider (OpenAI vs Voyage)
-
-</details>
-
-### Still Need Help?
-
-- 📚 Check our [comprehensive docs](https://github.com/ramakay/claude-self-reflect/wiki)
-- 💬 Ask in [Discussions](https://github.com/ramakay/claude-self-reflect/discussions)
-- 🐛 Report bugs in [Issues](https://github.com/ramakay/claude-self-reflect/issues)
-
-## 🚢 Roadmap
-
-### Near Term (Q1 2025)
-- [x] One-command installation
-- [x] Continuous import watching
-- [x] Cross-project search
-- [ ] Conversation summarization
-- [ ] Time-based filtering
-- [ ] Export conversation history
-
-### Medium Term (Q2 2025)
-- [ ] Multi-modal memory (images, code blocks)
-- [ ] Conversation analytics dashboard
-- [ ] Team sharing capabilities
-- [ ] Cloud sync option (encrypted)
-- [ ] VS Code extension
-
-### Long Term (2025+)
-- [ ] Active learning from search patterns
-- [ ] Conversation graph visualization
-- [ ] Integration with other AI assistants
-- [ ] Enterprise features
-
-## 🙏 Acknowledgments
-
-- [Anthropic](https://anthropic.com) for Claude and the MCP protocol
-- [Qdrant](https://qdrant.tech) for the amazing vector database
-- [Voyage AI](https://voyageai.com) for best-in-class embeddings
-- All our [contributors](https://github.com/ramakay/claude-self-reflect/graphs/contributors)
-
-## 📜 License
+## License
 
 MIT License - see [LICENSE](LICENSE) for details.
 
 ---
 
 <p align="center">
-  <i>Built with ❤️ for the Claude community</i><br>
-  <b>Star ⭐ this repo if it helps you remember!</b>
+  Built with ❤️ for the Claude community by <a href="https://github.com/ramakay">ramakay</a>
 </p>
