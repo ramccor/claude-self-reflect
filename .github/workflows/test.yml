@@ -36,7 +36,7 @@ jobs:
     
     - name: Upload test results
       if: always()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: unit-test-results
         path: claude-self-reflection/test-results.xml
@@ -169,7 +169,7 @@ jobs:
         echo '{"searchLatency": 150, "importSpeed": 100, "memoryUsage": 256, "accuracy": 75}' > benchmark-results.json
     
     - name: Upload benchmark results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: benchmark-results
         path: claude-self-reflection/benchmark-results.json
