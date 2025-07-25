@@ -46,7 +46,7 @@ services:
       - PYTHONUNBUFFERED=1
     restart: "no"
     profiles: ["import"]
-    command: python /scripts/import-openai.py
+    command: python /scripts/import-openai-enhanced.py
 
   # Continuous watcher service (optional)
   watcher:

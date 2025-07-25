@@ -113,7 +113,7 @@ class ContinuousImporter:
             # Import using the existing import script
             for file_info in files:
                 try:
-                    # Call the import-openai.py script for this specific file
+                    # Call the import-single-project.py script for this specific file
                     import subprocess
                     
                     # Get the actual project directory path
