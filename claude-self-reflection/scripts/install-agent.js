@@ -49,9 +49,15 @@ async function installAgent() {
     await fs.copyFile(agentSource, agentDest);
     
     console.log('✅ Reflection agent installed at .claude/agents/reflection.md');
+    console.log('');
+    console.log('🚀 Next Steps:');
+    console.log('   1. Start Qdrant: docker run -d --name qdrant -p 6333:6333 qdrant/qdrant:latest');
+    console.log('   2. Choose embedding provider: https://github.com/ramakay/claude-self-reflect#choose-your-embedding-provider');
+    console.log('   3. Import conversations: Follow the installation guide');
+    console.log('');
     console.log('💡 The agent will activate when you ask about past conversations');
     console.log('   Example: "What did we discuss about API design?"');
-    console.log('   Or explicitly: "Use the reflection agent to find..."');
+    console.log('   Note: You\'ll get "No conversations found" until you import your Claude history');
     
   } catch (error) {
     console.error('❌ Error installing reflection agent:', error.message);

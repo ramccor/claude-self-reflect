@@ -27,17 +27,66 @@ Claude-Self-Reflect creates a **semantic memory layer** that:
 - **Local-First**: Your conversations never leave your machine
 - **Incremental**: Only processes new conversations, not full re-imports
 
+## 🚀 Choose Your Embedding Provider
+
+Embedding models convert your conversations into numbers that enable semantic search. Choose the option that best fits your needs:
+
+### 🥇 Voyage AI (Recommended)
+- ✅ **200M tokens FREE** - covers most users completely  
+- ✅ Best quality for conversation search
+- ✅ Only $0.02/1M tokens after free tier
+- 🔗 [Get API key](https://dash.voyageai.com/)
+
+**Why choose Voyage?** Purpose-built for retrieval tasks, massive free tier means most users never pay.
+
+### 🥈 Google Gemini (Free Alternative)
+- ✅ **Completely FREE** (unlimited usage)
+- ⚠️ Your data used to improve Google products  
+- ✅ Good multilingual support
+- 🔗 [Get API key](https://ai.google.dev/gemini-api/docs)
+
+**Why choose Gemini?** Best for users who want unlimited free usage and don't mind data sharing.
+
+### 🥉 Local Processing (Privacy First)
+- ✅ **Completely FREE**, works offline
+- ✅ No API keys, no data sharing
+- ⚠️ Lower quality results, slower processing
+- 🔗 No setup required
+
+**Why choose Local?** Perfect for privacy-focused users or those who want to avoid any external dependencies.
+
+### 🏅 OpenAI (If You Have Credits)
+- ❌ No free tier
+- ✅ $0.02/1M tokens (same as Voyage paid)  
+- ✅ Good quality, established ecosystem
+- 🔗 [Get API key](https://platform.openai.com/api-keys)
+
+**Why choose OpenAI?** If you already have OpenAI credits or prefer their ecosystem.
+
+---
+
 ## 🚀 Installation
 
 ### Quick Start (Claude Code)
+
+#### Step 1: Install the MCP Client
 ```bash
-# Step 1: Install the MCP client
 npm install -g claude-self-reflect
+```
+This installs the reflection agent in your project automatically.
 
-# Step 2: Start Qdrant database
+#### Step 2: Start Qdrant Database  
+```bash
 docker run -d --name qdrant -p 6333:6333 qdrant/qdrant:latest
+```
 
-# Step 3: Import your conversations (requires API key)
+#### Step 3: Import Your Conversations
+**Why this step?** The reflection agent needs your conversation history to work. Without this, you'll get "No conversations found" when asking about past discussions.
+
+**Choose your provider** (see comparison above), then:
+
+**For Voyage AI (Recommended):**
+```bash
 export VOYAGE_API_KEY="your-voyage-api-key"
 git clone https://github.com/ramakay/claude-self-reflect.git
 cd claude-self-reflect
@@ -45,10 +94,19 @@ pip install -r scripts/requirements.txt
 python scripts/import-openai-enhanced.py
 ```
 
-**⚠️ Important:** `npm install` only installs the MCP client. You still need to:
-- Run Docker for Qdrant database
-- Set up API keys for embeddings
-- Run the Python import script for your conversations
+**For Google Gemini:**
+```bash
+export GEMINI_API_KEY="your-gemini-api-key"
+# Same clone and import steps
+```
+
+**For Local Processing:**
+```bash
+export USE_LOCAL_EMBEDDINGS=true
+# Same clone and import steps - no API key needed
+```
+
+**💡 First Time?** Most users with typical conversation history (50-100 conversations) stay within the 200M token free tier of Voyage AI.
 
 The reflection agent will activate when you ask:
 ```
@@ -186,7 +244,7 @@ python scripts/import-openai-enhanced.py --validate-only
   • Total files: 265
   • New files to import: 265
   • Estimated chunks: ~2,650
-  • Estimated cost: $0.0265
+  • Estimated cost: FREE (within 200M token limit)
   • Embedding model: voyage-3.5-lite
 
 🔍 DRY-RUN MODE - No changes will be made
@@ -203,15 +261,22 @@ python scripts/import-openai-enhanced.py --validate-only
   • Chunks created: 2,650
   • Embeddings would be generated: 2,650
   • API calls would be made: 133
-  • 💰 Estimated cost: $0.0265
+  • 💰 Estimated cost: FREE (within 200M token limit)
 ```
 
 ### Cost Estimation
 
-The dry-run mode provides accurate cost estimates based on:
-- Voyage AI: $0.02 per 1M tokens (voyage-3.5-lite)
-- OpenAI: $0.13 per 1M tokens (text-embedding-3-small)
-- Average 500 tokens per conversation chunk
+The dry-run mode provides accurate cost estimates:
+
+**Free Tiers:**
+- Voyage AI: 200M tokens FREE, then $0.02 per 1M tokens
+- Google Gemini: Unlimited FREE (data used for training)
+- Local: Always FREE
+
+**Paid Only:**
+- OpenAI: $0.02 per 1M tokens (no free tier)
+
+**Reality Check:** With 500 tokens per conversation chunk, 200M free tokens = ~400,000 conversation chunks. Most users never reach the paid tier.
 
 ### Continuous Testing
 
@@ -258,9 +323,10 @@ python scripts/import-openai-enhanced.py --dry-run | tee import-test.log
 ### Environment Variables
 ```bash
 # Embedding Provider (choose one)
-VOYAGE_API_KEY=your-key      # Recommended: Best quality
-OPENAI_API_KEY=your-key      # Alternative: Good quality
-USE_LOCAL_EMBEDDINGS=true    # Free: Lower quality
+VOYAGE_API_KEY=your-key      # 200M tokens FREE, then $0.02/1M
+GEMINI_API_KEY=your-key      # Unlimited FREE (data shared)
+OPENAI_API_KEY=your-key      # $0.02/1M tokens (no free tier)
+USE_LOCAL_EMBEDDINGS=true    # Always FREE (lower quality)
 
 # Qdrant Configuration
 QDRANT_URL=http://localhost:6333  # Default local Qdrant
