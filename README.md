@@ -2,14 +2,55 @@
 
 Give your AI perfect memory across all conversations. Claude-Self-Reflect provides semantic search over your entire conversation history using Qdrant vector database and MCP (Model Context Protocol).
 
+## The Problem, Mechanism & Why
+
+### 🤔 The Problem
+Claude has no memory between conversations. Every chat starts from scratch, forcing you to:
+- Re-explain context from previous discussions
+- Repeat solutions you've already discovered together
+- Lose valuable insights from past debugging sessions
+- Search through hundreds of conversation files manually
+
+### ⚡ The Mechanism
+Claude-Self-Reflect creates a **semantic memory layer** that:
+
+1. **Imports**: Scans your `~/.claude/projects/` directory for conversation history
+2. **Processes**: Chunks conversations into searchable segments with metadata
+3. **Embeds**: Creates vector representations using Voyage AI or OpenAI embeddings
+4. **Stores**: Saves to Qdrant vector database for fast similarity search
+5. **Searches**: Provides semantic search through MCP tools in Claude
+
+### 🎯 Why This Approach Works
+- **Semantic vs Keyword**: Finds relevant discussions even with different wording
+- **Vector Database**: Purpose-built for similarity search, not complex graph traversal
+- **MCP Integration**: Native Claude tools - no external interfaces needed
+- **Local-First**: Your conversations never leave your machine
+- **Incremental**: Only processes new conversations, not full re-imports
+
 ## 🚀 Installation
 
-### For Claude Code (Recommended)
+### Quick Start (Claude Code)
 ```bash
+# Step 1: Install the MCP client
 npm install -g claude-self-reflect
+
+# Step 2: Start Qdrant database
+docker run -d --name qdrant -p 6333:6333 qdrant/qdrant:latest
+
+# Step 3: Import your conversations (requires API key)
+export VOYAGE_API_KEY="your-voyage-api-key"
+git clone https://github.com/ramakay/claude-self-reflect.git
+cd claude-self-reflect
+pip install -r scripts/requirements.txt
+python scripts/import-openai-enhanced.py
 ```
 
-This automatically installs a reflection agent in your project. It will activate when you:
+**⚠️ Important:** `npm install` only installs the MCP client. You still need to:
+- Run Docker for Qdrant database
+- Set up API keys for embeddings
+- Run the Python import script for your conversations
+
+The reflection agent will activate when you ask:
 ```
 Find our previous discussions about API design
 What did we talk about regarding authentication?
@@ -69,36 +110,16 @@ See also:
 ### 3. Python Importer
 - Reads JSONL files from Claude conversation logs
 - Creates conversation chunks for context
-- Generates embeddings using sentence-transformers
+- Generates embeddings using Voyage AI (voyage-3.5-lite)
 - Stores directly in Qdrant with metadata
 
-## Quick Start
-
-### 1. Install Qdrant (if not already running)
-```bash
-docker run -d --name qdrant -p 6333:6333 qdrant/qdrant:latest
-```
-
-### 2. Import Your Conversations
-```bash
-# Clone this repository
-git clone https://github.com/ramakay/claude-self-reflect.git
-cd claude-self-reflect
-
-# Install dependencies
-pip install -r scripts/requirements.txt
-
-# Run import
-python scripts/import-openai-enhanced.py
-```
-
-### 3. Start Using
-The reflection agent is automatically available in Claude Code after installation.
 
 ## Using the Reflection Agent
 
 ### In Claude Code
 The reflection agent activates automatically when you ask about past conversations:
+
+![Reflection Agent in Action](docs/images/Reflection-specialist.png)
 
 ```
 "What did we discuss about database design?"
