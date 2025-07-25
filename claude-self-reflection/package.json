@@ -1,6 +1,6 @@
 {
   "name": "claude-self-reflect",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Give Claude perfect memory of all your conversations - Semantic search across your entire Claude Desktop history",
   "keywords": [
     "claude",
