@@ -1,7 +1,7 @@
 {
   "name": "claude-self-reflect",
   "version": "1.3.3",
-  "description": "Give Claude perfect memory of all your conversations - Semantic search across your entire Claude Desktop history",
+  "description": "Give Claude perfect memory of all your conversations - Semantic search across your entire Claude Code history",
   "keywords": [
     "claude",
     "mcp",
@@ -11,7 +11,7 @@
     "qdrant",
     "vector-search",
     "ai-memory",
-    "claude-desktop"
+    "claude-code"
   ],
   "homepage": "https://github.com/ramakay/claude-self-reflect#readme",
   "bugs": {

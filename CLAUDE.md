@@ -111,7 +111,7 @@ This project includes 6 specialized sub-agents that Claude will PROACTIVELY use 
    - **Expertise**: Multi-container orchestration, health monitoring, networking
 
 4. **mcp-integration** - MCP server developer
-   - **When to use**: Claude Desktop integration, tool development, TypeScript
+   - **When to use**: Claude Code integration, tool development, TypeScript
    - **Expertise**: MCP protocol, tool implementation, connection debugging
 
 5. **search-optimizer** - Search quality expert
