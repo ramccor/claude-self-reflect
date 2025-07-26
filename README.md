@@ -2,16 +2,22 @@
 
 Claude forgets everything. This fixes that.
 
-```bash
-npm install -g claude-self-reflect && claude-self-reflect setup
-```
-
 ## What You Get
 
 Ask Claude about past conversations. Get actual answers.
 
 **Before**: "I don't have access to previous conversations"  
 **After**: "We discussed JWT auth on Tuesday. You decided on 15-minute tokens."
+
+Your conversations become searchable. Your decisions stay remembered. Your context persists.
+
+## Install
+
+```bash
+npm install -g claude-self-reflect && claude-self-reflect setup
+```
+
+5 minutes. That's it.
 
 ## The Magic
 
