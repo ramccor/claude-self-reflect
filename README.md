@@ -19,34 +19,47 @@ Ask Claude about past conversations. Get actual answers.
 
 ## Before & After
 
+### Before Claude Self-Reflect
 ```mermaid
 flowchart LR
-    subgraph Before[BEFORE]
-        A1[You] --> B1[Claude]
-        B1 --> C1[No memory]
-        C1 --> D1[😤 Re-solve]
-    end
-    
-    subgraph After[AFTER]
-        A2[You] --> B2[Claude + Reflection]
-        B2 --> C2[Found it!]
-        C2 --> D2[😎 Keep building]
-    end
-    
-    Before -.-> After
+    A[You] -->|"What was that<br/>PostgreSQL fix?"| B[Claude]
+    B -->|"I don't have access to<br/>previous conversations"| C[😤 Frustrated]
+    C --> D[Search ~/.claude/logs/*]
+    D --> E[grep through 10,847 matches]
+    E --> F[Give up]
+    F --> G[Re-solve the problem]
     
     classDef userStyle fill:#FFD700,stroke:#1e3a5f,stroke-width:3px,color:#1e3a5f
     classDef claudeStyle fill:#D2691E,stroke:#1e3a5f,stroke-width:3px,color:#fff
     classDef problemStyle fill:#1e3a5f,stroke:#FFD700,stroke-width:3px,color:#FFD700
+    
+    class A userStyle
+    class B claudeStyle
+    class C,D,E,F,G problemStyle
+```
+
+### After Claude Self-Reflect
+```mermaid
+flowchart LR
+    A[You] -->|"What was that<br/>PostgreSQL fix?"| B[Claude]
+    B -->|Spawns| C[Reflection Agent]
+    C -->|MCP Protocol| D[Python Server]
+    D -->|Voyage AI| E[Embeddings]
+    E -->|Semantic Search| F[Qdrant DB]
+    F -->|Returns matches| G[Found: GIN index<br/>2.3s → 45ms]
+    G --> H[😎 Continue building]
+    
+    classDef userStyle fill:#FFD700,stroke:#1e3a5f,stroke-width:3px,color:#1e3a5f
+    classDef claudeStyle fill:#D2691E,stroke:#1e3a5f,stroke-width:3px,color:#fff
+    classDef agentStyle fill:#8B4513,stroke:#1e3a5f,stroke-width:3px,color:#fff
+    classDef techStyle fill:#1e3a5f,stroke:#FFD700,stroke-width:3px,color:#FFD700
     classDef successStyle fill:#FFD700,stroke:#1e3a5f,stroke-width:3px,color:#1e3a5f
     
-    class A1,A2 userStyle
-    class B1,B2 claudeStyle
-    class C1,D1 problemStyle
-    class C2,D2 successStyle
-    
-    style Before fill:#2c2c2c,stroke:#FFD700,stroke-width:3px
-    style After fill:#2c2c2c,stroke:#FFD700,stroke-width:3px
+    class A userStyle
+    class B claudeStyle
+    class C agentStyle
+    class D,E,F techStyle
+    class G,H successStyle
 ```
 
 ## Real Examples That Made Us Build This
