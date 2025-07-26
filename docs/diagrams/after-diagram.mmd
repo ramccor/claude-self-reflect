@@ -1,0 +1,20 @@
+flowchart LR
+    A[You] -->|"What was that<br/>PostgreSQL fix?"| B[Claude]
+    B -->|Spawns| C[Reflection Agent]
+    C -->|MCP Protocol| D[Python Server]
+    D -->|Voyage AI| E[Embeddings]
+    E -->|Semantic Search| F[Qdrant DB]
+    F -->|Returns matches| G["Found: GIN index<br/>2.3s → 45ms"]
+    G --> H[😎 Continue building]
+    
+    classDef userStyle fill:#FFD700,stroke:#1e3a5f,stroke-width:3px,color:#1e3a5f
+    classDef claudeStyle fill:#D2691E,stroke:#1e3a5f,stroke-width:3px,color:#fff
+    classDef agentStyle fill:#8B4513,stroke:#1e3a5f,stroke-width:3px,color:#fff
+    classDef techStyle fill:#1e3a5f,stroke:#FFD700,stroke-width:3px,color:#FFD700
+    classDef successStyle fill:#FFD700,stroke:#1e3a5f,stroke-width:3px,color:#1e3a5f
+    
+    class A userStyle
+    class B claudeStyle
+    class C agentStyle
+    class D,E,F techStyle
+    class G,H successStyle

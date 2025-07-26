@@ -20,47 +20,10 @@ Ask Claude about past conversations. Get actual answers.
 ## Before & After
 
 ### Before Claude Self-Reflect
-```mermaid
-flowchart LR
-    A[You] -->|"What was that<br/>PostgreSQL fix?"| B[Claude]
-    B -->|"I don't have access to<br/>previous conversations"| C[😤 Frustrated]
-    C --> D[Search ~/.claude/logs/*]
-    D --> E[grep through 10,847 matches]
-    E --> F[Give up]
-    F --> G[Re-solve the problem]
-    
-    classDef userStyle fill:#FFD700,stroke:#1e3a5f,stroke-width:3px,color:#1e3a5f
-    classDef claudeStyle fill:#D2691E,stroke:#1e3a5f,stroke-width:3px,color:#fff
-    classDef problemStyle fill:#1e3a5f,stroke:#FFD700,stroke-width:3px,color:#FFD700
-    
-    class A userStyle
-    class B claudeStyle
-    class C,D,E,F,G problemStyle
-```
+![Before Claude Self-Reflect](docs/diagrams/before-diagram.webp)
 
 ### After Claude Self-Reflect
-```mermaid
-flowchart LR
-    A[You] -->|"What was that<br/>PostgreSQL fix?"| B[Claude]
-    B -->|Spawns| C[Reflection Agent]
-    C -->|MCP Protocol| D[Python Server]
-    D -->|Voyage AI| E[Embeddings]
-    E -->|Semantic Search| F[Qdrant DB]
-    F -->|Returns matches| G[Found: GIN index<br/>2.3s → 45ms]
-    G --> H[😎 Continue building]
-    
-    classDef userStyle fill:#FFD700,stroke:#1e3a5f,stroke-width:3px,color:#1e3a5f
-    classDef claudeStyle fill:#D2691E,stroke:#1e3a5f,stroke-width:3px,color:#fff
-    classDef agentStyle fill:#8B4513,stroke:#1e3a5f,stroke-width:3px,color:#fff
-    classDef techStyle fill:#1e3a5f,stroke:#FFD700,stroke-width:3px,color:#FFD700
-    classDef successStyle fill:#FFD700,stroke:#1e3a5f,stroke-width:3px,color:#1e3a5f
-    
-    class A userStyle
-    class B claudeStyle
-    class C agentStyle
-    class D,E,F techStyle
-    class G,H successStyle
-```
+![After Claude Self-Reflect](docs/diagrams/after-diagram.webp)
 
 ## Real Examples That Made Us Build This
 
