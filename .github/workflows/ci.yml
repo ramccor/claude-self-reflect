@@ -43,7 +43,7 @@ jobs:
     - name: Run tests
       run: |
         cd claude-self-reflection
-        npm test
+        npm run test:ci
       env:
         CI: true
 
