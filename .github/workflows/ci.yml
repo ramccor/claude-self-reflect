@@ -110,13 +110,17 @@ jobs:
     
     - name: Create release archive
       run: |
-        tar -czf claude-self-reflection-${{ github.event.release.tag_name }}.tar.gz \
+        mkdir -p /tmp/release
+        tar -czf /tmp/release/claude-self-reflection-${{ github.event.release.tag_name }}.tar.gz \
           --exclude='node_modules' \
           --exclude='venv' \
           --exclude='.git' \
           --exclude='data' \
-          --exclude='claude-self-reflection-*.tar.gz' \
+          --exclude='qdrant_storage' \
+          --exclude='config-isolated' \
+          --exclude='*.tar.gz' \
           .
+        mv /tmp/release/claude-self-reflection-${{ github.event.release.tag_name }}.tar.gz .
     
     - name: Upload Release Asset
       uses: softprops/action-gh-release@v2
