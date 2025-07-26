@@ -1,0 +1,67 @@
+# Dependencies
+node_modules/
+venv/
+.venv/
+*.pyc
+__pycache__/
+.pytest_cache/
+
+# Build outputs
+dist/
+build/
+*.egg-info/
+.tsc-cache/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Data and state
+data/
+config/imported-files.json
+config-isolated/
+*.db
+*.sqlite
+
+# Docker volumes
+qdrant-storage/
+
+# Test artifacts
+coverage/
+.coverage
+htmlcov/
+test-results/
+*.coverage
+
+# Internal documentation
+.internal/
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+tmp/
+
+# OS files
+Thumbs.db
+.DS_Store
+Desktop.ini
+
+# Backup files
+*.backup
+*.bak
+*~

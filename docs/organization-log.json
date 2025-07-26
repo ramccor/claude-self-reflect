@@ -1,0 +1,26 @@
+[
+  {
+    "timestamp": "2025-07-24T17:56:36.829Z",
+    "originalPath": "/Users/ramakrishnanannaswamy/memento-stack/MIGRATION_DECISION.md",
+    "newPath": "/Users/ramakrishnanannaswamy/memento-stack/docs/planning/MIGRATION_DECISION.md",
+    "category": "planning",
+    "score": 95,
+    "reasoning": "Claude AI: This is a migration decision document that outlines the strategic plan to move from Neo4j to Qdrant. It contains architecture comparison, implementation path, and decision rationale - all key elements of technical planning and specifications."
+  },
+  {
+    "timestamp": "2025-07-26T15:06:10.554Z",
+    "originalPath": "/Users/ramakrishnanannaswamy/projects/claude-self-reflect/MCP_REFERENCE.md",
+    "newPath": "/Users/ramakrishnanannaswamy/projects/claude-self-reflect/docs/development/MCP_REFERENCE.md",
+    "category": "development",
+    "score": 95,
+    "reasoning": "Claude AI: This is a comprehensive developer reference guide containing critical implementation details, API documentation, and technical specifications for working with MCP (Model Context Protocol) servers. It provides detailed coding guidelines, correct usage patterns, and technical troubleshooting information essential for development work."
+  },
+  {
+    "timestamp": "2025-07-26T15:08:04.506Z",
+    "originalPath": "/Users/ramakrishnanannaswamy/projects/claude-self-reflect/MCP_REFERENCE.md",
+    "newPath": "/Users/ramakrishnanannaswamy/projects/claude-self-reflect/docs/architecture/MCP_REFERENCE.md",
+    "category": "architecture",
+    "score": 95,
+    "reasoning": "Claude AI: This is a comprehensive reference guide documenting the MCP (Model Context Protocol) architecture, integration patterns, and technical specifications for the claude-self-reflection system. It defines system architecture, protocols, naming conventions, and operational guidelines."
+  }
+]
