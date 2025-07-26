@@ -25,11 +25,7 @@ npm install -g claude-self-reflect && claude-self-reflect setup
 
 ## Before & After
 
-### Before Claude Self-Reflect
-![Before Claude Self-Reflect](docs/diagrams/before-diagram.webp)
-
-### After Claude Self-Reflect
-![After Claude Self-Reflect](docs/diagrams/after-diagram.webp)
+![Before and After Claude Self-Reflect](docs/diagrams/before-after-combined.webp)
 
 ## Real Examples That Made Us Build This
 
