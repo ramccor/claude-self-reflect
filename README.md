@@ -36,6 +36,19 @@ Claude: "3 conversations found:
         - Nov 20: Added rate limiting per authenticated connection"
 ```
 
+## The Secret Sauce: Sub-Agents
+
+Here's what makes this magical: **The Reflection Specialist sub-agent**.
+
+When you ask about past conversations, Claude doesn't search in your main chat. Instead, it spawns a specialized sub-agent that:
+- Searches your conversation history in its own context
+- Brings back only the relevant results
+- Keeps your main conversation clean and focused
+
+**Your main context stays pristine**. No clutter. No token waste.
+
+![Reflection Agent in Action](docs/images/Reflection-specialist.png)
+
 ## How It Works (10 Second Version)
 
 Your conversations → Vector embeddings → Semantic search → Claude remembers
@@ -50,7 +63,7 @@ Once installed, just talk naturally:
 - "Find our debugging session from last week"
 - "Remember this solution for next time"
 
-Claude automatically searches when relevant. No special commands needed.
+The reflection specialist automatically activates. No special commands needed.
 
 ## Memory Decay
 
