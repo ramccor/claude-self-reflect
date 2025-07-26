@@ -20,24 +20,35 @@ Ask Claude about past conversations. Get actual answers.
 ## Before & After
 
 ```mermaid
-graph LR
-    subgraph Before["Before Claude Self-Reflect"]
-        A[You: What was that PostgreSQL optimization?] -->|Every conversation| B[Claude: I don't have access to<br/>previous conversations]
-        B --> C[😤 Frustrated Developer]
-        C --> D[Search through 50 chat logs manually]
-        D --> E[Give up and re-solve the problem]
+flowchart LR
+    subgraph Before["BEFORE"]
+        direction TB
+        A1[You] -->|asks| B1[Claude]
+        B1 -->|"No memory"| C1[You search manually]
+        C1 --> D1[😤 Re-solve problem]
     end
     
-    subgraph After["After Claude Self-Reflect"]
-        F[You: What was that PostgreSQL optimization?] -->|Reflection agent searches| G[Claude: Found it - Dec 15th conversation<br/>GIN index on metadata JSONB<br/>reduced query from 2.3s to 45ms]
-        G --> H[😎 Happy Developer]
-        H --> I[Continue building]
+    subgraph After["AFTER"] 
+        direction TB
+        A2[You] -->|asks| B2[Claude + Reflection]
+        B2 -->|"Found it!"| C2[Exact answer]
+        C2 --> D2[😎 Keep building]
     end
     
-    style A fill:#f9f,stroke:#333,stroke-width:2px
-    style F fill:#9f9,stroke:#333,stroke-width:2px
-    style C fill:#faa,stroke:#333,stroke-width:2px
-    style H fill:#afa,stroke:#333,stroke-width:2px
+    Before --> After
+    
+    classDef userStyle fill:#FFD700,stroke:#1e3a5f,stroke-width:3px,color:#1e3a5f
+    classDef claudeStyle fill:#D2691E,stroke:#1e3a5f,stroke-width:3px,color:#fff
+    classDef problemStyle fill:#1e3a5f,stroke:#FFD700,stroke-width:3px,color:#FFD700
+    classDef successStyle fill:#FFD700,stroke:#1e3a5f,stroke-width:3px,color:#1e3a5f
+    
+    class A1,C1,A2 userStyle
+    class B1,B2 claudeStyle
+    class D1 problemStyle
+    class C2,D2 successStyle
+    
+    style Before fill:#2c2c2c,stroke:#FFD700,stroke-width:3px
+    style After fill:#2c2c2c,stroke:#FFD700,stroke-width:3px
 ```
 
 ## Real Examples That Made Us Build This
