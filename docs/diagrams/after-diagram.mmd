@@ -1,11 +1,18 @@
-flowchart LR
-    A[You] -->|"What was that<br/>PostgreSQL fix?"| B[Claude]
-    B -->|Spawns| C[Reflection Agent]
-    C -->|MCP Protocol| D[Python Server]
-    D -->|Voyage AI| E[Embeddings]
-    E -->|Semantic Search| F[Qdrant DB]
-    F -->|Returns matches| G["Found: GIN index<br/>2.3s → 45ms"]
-    G --> H[😎 Continue building]
+flowchart TB
+    subgraph Row1[" "]
+        A[User<br/>Question] --> B[Claude<br/>Main]
+        B --> C[Reflection<br/>Agent]
+        C --> D[MCP<br/>Server]
+    end
+    
+    subgraph Row2[" "]
+        D --> E[Python<br/>FastMCP]
+        E --> F[Voyage<br/>Embed]
+        F --> G[Qdrant<br/>Search]
+        G --> H[Exact<br/>Result]
+    end
+    
+    Row1 -.-> Row2
     
     classDef userStyle fill:#FFD700,stroke:#1e3a5f,stroke-width:3px,color:#1e3a5f
     classDef claudeStyle fill:#D2691E,stroke:#1e3a5f,stroke-width:3px,color:#fff
@@ -16,5 +23,8 @@ flowchart LR
     class A userStyle
     class B claudeStyle
     class C agentStyle
-    class D,E,F techStyle
-    class G,H successStyle
+    class D,E,F,G techStyle
+    class H successStyle
+    
+    style Row1 fill:transparent,stroke:none
+    style Row2 fill:transparent,stroke:none
