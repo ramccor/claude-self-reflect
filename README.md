@@ -21,30 +21,28 @@ Ask Claude about past conversations. Get actual answers.
 
 ```mermaid
 flowchart LR
-    subgraph Before["BEFORE"]
-        direction TB
-        A1[You] -->|asks| B1[Claude]
-        B1 -->|"No memory"| C1[You search manually]
-        C1 --> D1[😤 Re-solve problem]
+    subgraph Before[BEFORE]
+        A1[You] --> B1[Claude]
+        B1 --> C1[No memory]
+        C1 --> D1[😤 Re-solve]
     end
     
-    subgraph After["AFTER"] 
-        direction TB
-        A2[You] -->|asks| B2[Claude + Reflection]
-        B2 -->|"Found it!"| C2[Exact answer]
+    subgraph After[AFTER]
+        A2[You] --> B2[Claude + Reflection]
+        B2 --> C2[Found it!]
         C2 --> D2[😎 Keep building]
     end
     
-    Before --> After
+    Before -.-> After
     
     classDef userStyle fill:#FFD700,stroke:#1e3a5f,stroke-width:3px,color:#1e3a5f
     classDef claudeStyle fill:#D2691E,stroke:#1e3a5f,stroke-width:3px,color:#fff
     classDef problemStyle fill:#1e3a5f,stroke:#FFD700,stroke-width:3px,color:#FFD700
     classDef successStyle fill:#FFD700,stroke:#1e3a5f,stroke-width:3px,color:#1e3a5f
     
-    class A1,C1,A2 userStyle
+    class A1,A2 userStyle
     class B1,B2 claudeStyle
-    class D1 problemStyle
+    class C1,D1 problemStyle
     class C2,D2 successStyle
     
     style Before fill:#2c2c2c,stroke:#FFD700,stroke-width:3px
