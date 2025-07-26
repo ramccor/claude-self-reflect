@@ -1,5 +1,5 @@
 flowchart TB
-    subgraph Before["BEFORE CLAUDE SELF-REFLECT"]
+    subgraph Before["BEFORE"]
         A1[User<br/>Question] --> B1[Claude<br/>Response]
         B1 --> C1[No<br/>Memory]
         C1 --> D1[Manual<br/>Search]
@@ -10,14 +10,14 @@ flowchart TB
     
     Before -.->|" "| After
     
-    subgraph After["AFTER CLAUDE SELF-REFLECT"]
+    subgraph After["AFTER"]
         A2[User<br/>Question] --> B2[Claude<br/>Main]
         B2 --> C2[Reflection<br/>Agent]
         C2 --> D2[MCP<br/>Server]
-        D2 --> E2[Python<br/>FastMCP]
-        E2 --> F2[Voyage<br/>Embed]
-        F2 --> G2[Qdrant<br/>Search]
-        G2 --> H2[Exact<br/>Result]
+        D2 --> E2[Qdrant<br/>Search]
+        E2 --> F2[Memory<br/>Decay]
+        F2 --> G2[Relevant<br/>Results]
+        G2 --> H2[Back to<br/>Main Context]
     end
     
     classDef userStyle fill:#FFD700,stroke:#1e3a5f,stroke-width:3px,color:#1e3a5f
