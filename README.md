@@ -15,7 +15,30 @@ Ask Claude about past conversations. Get actual answers.
 
 ## The Magic
 
-![How it works](docs/diagrams/before-after-sequence.png)
+![Self Reflection vs The Grind](docs/images/red-reflection.webp)
+
+## Before & After
+
+```mermaid
+graph LR
+    subgraph "Before Claude Self-Reflect"
+        A[You: "What was that PostgreSQL optimization?"] -->|Every conversation| B[Claude: "I don't have access to<br/>previous conversations"]
+        B --> C[😤 Frustrated Developer]
+        C --> D[Search through 50 chat logs manually]
+        D --> E[Give up and re-solve the problem]
+    end
+    
+    subgraph "After Claude Self-Reflect"
+        F[You: "What was that PostgreSQL optimization?"] -->|Reflection agent searches| G[Claude: "Found it! Dec 15th conversation:<br/>GIN index on metadata JSONB<br/>reduced query from 2.3s to 45ms"]
+        G --> H[😎 Happy Developer]
+        H --> I[Continue building]
+    end
+    
+    style A fill:#f9f,stroke:#333,stroke-width:2px
+    style F fill:#9f9,stroke:#333,stroke-width:2px
+    style C fill:#faa,stroke:#333,stroke-width:2px
+    style H fill:#afa,stroke:#333,stroke-width:2px
+```
 
 ## Real Examples That Made Us Build This
 
