@@ -31,7 +31,12 @@ And getting instant, accurate answers from your entire conversation history. Tha
 npm install -g claude-self-reflect && claude-self-reflect setup
 ```
 
-**That's it!** The setup wizard will guide you through everything.
+**That's it!** The setup wizard will:
+- ✅ Check Python 3.10+ installation
+- ✅ Start Qdrant vector database
+- ✅ Install the Python MCP server
+- ✅ Configure your API keys
+- ✅ Set up Claude Code integration
 
 - **Need details?** See [Installation Guide](docs/installation-guide.md)
 - **Embedding providers?** See [Embedding Provider Guide](docs/embedding-providers.md)
@@ -59,6 +64,23 @@ See also:
 3. **Proven Pattern**: Industry standard for conversation memory (LangChain, Dify, etc.)
 4. **No Import Issues**: Direct vector storage without entity extraction complexity
 
+## Project Structure
+
+```
+claude-self-reflect/
+├── mcp-server/           # Python MCP server using FastMCP
+│   ├── src/              # Server source code
+│   ├── pyproject.toml    # Python package configuration
+│   └── run-mcp.sh        # MCP startup script
+├── scripts/              # Import and utility scripts
+│   ├── import-*.py       # Various import scripts for conversations
+│   └── test-*.py         # Test scripts for features
+├── .claude/agents/       # Claude sub-agents for specialized tasks
+├── config/               # Configuration files
+├── data/                 # Qdrant vector database storage
+└── docs/                 # Documentation and guides
+```
+
 ## Components
 
 ### 1. Qdrant Vector Database
@@ -70,11 +92,12 @@ See also:
 - **Tool 1**: `store_reflection` - Store important insights and decisions
 - **Tool 2**: `reflect_on_past` - Search through conversation history
 - Simple semantic search without complex entity extraction
+- Python-based using FastMCP framework
 
 ### 3. Python Importer
 - Reads JSONL files from Claude conversation logs
 - Creates conversation chunks for context
-- Generates embeddings using Voyage AI (voyage-3.5-lite)
+- Generates embeddings using Voyage AI (voyage-3-large)
 - Stores directly in Qdrant with metadata
 
 

@@ -10,11 +10,11 @@ This document contains CRITICAL information that ALL agents MUST follow when wor
 mcp__<server-name>__<tool-name>
 ```
 
-**Example for claude-self-reflection**:
-- ✅ CORRECT: `mcp__claude-self-reflection__reflect_on_past`
-- ✅ CORRECT: `mcp__claude-self-reflection__store_reflection`
+**Example for claude-self-reflect**:
+- ✅ CORRECT: `mcp__claude-self-reflect__reflect_on_past`
+- ✅ CORRECT: `mcp__claude-self-reflect__store_reflection`
 - ❌ WRONG: `reflect_on_past` (missing namespace)
-- ❌ WRONG: `mcp__claude-self-reflect__reflect_on_past` (wrong server name)
+- ❌ WRONG: `mcp__claude-self-reflection__reflect_on_past` (wrong server name)
 
 ### 2. MCP Management Commands
 
@@ -40,16 +40,16 @@ claude mcp logs <name>       # ❌ NO SUCH COMMAND
 claude mcp add <name>        # ❌ MISSING required commandOrUrl
 ```
 
-### 3. Adding claude-self-reflection MCP
+### 3. Adding claude-self-reflect MCP
 
 **CORRECT full command**:
 ```bash
-claude mcp add claude-self-reflection "/Users/ramakrishnanannaswamy/projects/claude-self-reflect/claude-self-reflection/run-mcp.sh" -e VOYAGE_KEY="<actual-key>" -e QDRANT_URL="http://localhost:6333"
+claude mcp add claude-self-reflect "/Users/ramakrishnanannaswamy/projects/claude-self-reflect/mcp-server/run-mcp.sh" -e VOYAGE_KEY="<actual-key>" -e QDRANT_URL="http://localhost:6333"
 ```
 
 **Common mistakes to AVOID**:
-- ❌ Wrong order: `claude mcp add -e KEY=value claude-self-reflection /path`
-- ❌ Missing command: `claude mcp add claude-self-reflection`
+- ❌ Wrong order: `claude mcp add -e KEY=value claude-self-reflect /path`
+- ❌ Missing command: `claude mcp add claude-self-reflect`
 - ❌ Wrong path: Using relative paths instead of absolute
 - ❌ Missing env vars: Not including required VOYAGE_KEY
 
@@ -65,15 +65,15 @@ claude mcp add claude-self-reflection "/Users/ramakrishnanannaswamy/projects/cla
 
 **Correct testing sequence**:
 1. Check if MCP is connected: `claude mcp list`
-2. Use namespaced tool names: `mcp__claude-self-reflection__reflect_on_past`
+2. Use namespaced tool names: `mcp__claude-self-reflect__reflect_on_past`
 3. If tools fail, don't assume they don't exist - check namespace
 4. If still failing, restart Claude Code
 
-## 🎯 Quick Reference for claude-self-reflection
+## 🎯 Quick Reference for claude-self-reflect
 
 ### Available Tools:
-- `mcp__claude-self-reflection__reflect_on_past` - Search past conversations
-- `mcp__claude-self-reflection__store_reflection` - Store insights
+- `mcp__claude-self-reflect__reflect_on_past` - Search past conversations
+- `mcp__claude-self-reflect__store_reflection` - Store insights
 
 ### Required Environment Variables:
 - `VOYAGE_KEY`: API key for Voyage AI embeddings
@@ -83,7 +83,7 @@ claude mcp add claude-self-reflection "/Users/ramakrishnanannaswamy/projects/cla
 
 **Search for past conversations**:
 ```javascript
-mcp__claude-self-reflection__reflect_on_past({
+mcp__claude-self-reflect__reflect_on_past({
   query: "your search query",
   limit: 5,
   minScore: 0.7
@@ -92,7 +92,7 @@ mcp__claude-self-reflection__reflect_on_past({
 
 **Store a reflection**:
 ```javascript
-mcp__claude-self-reflection__store_reflection({
+mcp__claude-self-reflect__store_reflection({
   content: "Important insight or solution",
   tags: ["tag1", "tag2", "tag3"]
 })
@@ -117,7 +117,7 @@ mcp__claude-self-reflection__store_reflection({
 ## 📋 Agent Checklist
 
 Before working with MCPs, ALWAYS:
-- [ ] Know the exact MCP server name (e.g., `claude-self-reflection`)
+- [ ] Know the exact MCP server name (e.g., `claude-self-reflect`)
 - [ ] Use namespaced tool format: `mcp__<server>__<tool>`
 - [ ] Include all required parameters when adding MCPs
 - [ ] Verify connection with `claude mcp list`
@@ -126,9 +126,9 @@ Before working with MCPs, ALWAYS:
 ## 🚀 Copy-Paste Commands
 
 ```bash
-# Remove and re-add claude-self-reflection (update VOYAGE_KEY)
-claude mcp remove claude-self-reflection
-claude mcp add claude-self-reflection "/Users/ramakrishnanannaswamy/projects/claude-self-reflect/claude-self-reflection/run-mcp.sh" -e VOYAGE_KEY="your-actual-key" -e QDRANT_URL="http://localhost:6333"
+# Remove and re-add claude-self-reflect (update VOYAGE_KEY)
+claude mcp remove claude-self-reflect
+claude mcp add claude-self-reflect "/Users/ramakrishnanannaswamy/projects/claude-self-reflect/mcp-server/run-mcp.sh" -e VOYAGE_KEY="your-actual-key" -e QDRANT_URL="http://localhost:6333"
 claude mcp list
 ```
 

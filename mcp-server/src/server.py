@@ -56,7 +56,7 @@ class SearchResult(BaseModel):
 
 # Initialize FastMCP instance
 mcp = FastMCP(
-    name="claude-reflect",
+    name="claude-self-reflect",
     instructions="Search past conversations and store reflections with time-based memory decay"
 )
 

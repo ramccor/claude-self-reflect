@@ -8,6 +8,7 @@ Claude Self Reflect provides semantic search across all Claude conversations wit
 - **Embeddings**: Voyage AI (voyage-3-large, 1024 dimensions)
 - **Search**: Cross-collection semantic search with time-based decay
 - **Import**: Continuous file watcher for automatic updates
+- **MCP Server**: Python-based using FastMCP (located in `mcp-server/`)
 
 ## Memory Decay Philosophy
 
@@ -42,21 +43,21 @@ Currently using client-side decay calculation (v1.3.1):
 claude mcp list
 
 # Add the MCP with required environment variables (name, then command, then env vars)
-claude mcp add claude-self-reflection "/Users/ramakrishnanannaswamy/projects/claude-self-reflect/claude-self-reflection/run-mcp.sh" -e VOYAGE_KEY="your-voyage-api-key" -e QDRANT_URL="http://localhost:6333"
+claude mcp add claude-self-reflect "/Users/ramakrishnanannaswamy/projects/claude-self-reflect/mcp-server/run-mcp.sh" -e VOYAGE_KEY="your-voyage-api-key" -e QDRANT_URL="http://localhost:6333"
 
 # Remove an MCP (useful when needing to restart)
-claude mcp remove claude-self-reflection
+claude mcp remove claude-self-reflect
 
 # Restart MCP (remove then re-add with env vars)
-claude mcp restart claude-self-reflection
+claude mcp restart claude-self-reflect
 ```
 
 #### INCORRECT Commands (Never Use):
 ```bash
 # ❌ These commands DO NOT exist:
-claude mcp status claude-self-reflection  # NO SUCH COMMAND
-claude mcp logs claude-self-reflection    # NO SUCH COMMAND
-claude mcp add claude-self-reflection     # MISSING required commandOrUrl argument
+claude mcp status claude-self-reflect  # NO SUCH COMMAND
+claude mcp logs claude-self-reflect    # NO SUCH COMMAND
+claude mcp add claude-self-reflect     # MISSING required commandOrUrl argument
 ```
 
 #### Important Notes:
@@ -68,8 +69,8 @@ claude mcp add claude-self-reflection     # MISSING required commandOrUrl argume
 ### Search & Reflection
 ```bash
 # Use MCP tools in Claude
-mcp__claude-self-reflection__reflect_on_past
-mcp__claude-self-reflection__store_reflection
+mcp__claude-self-reflect__reflect_on_past
+mcp__claude-self-reflect__store_reflection
 ```
 
 ### Import Commands
@@ -138,6 +139,24 @@ When you mention any of these scenarios, Claude will automatically engage the ap
 
 "Remember this solution for next time"
 → reflection-specialist will store the insight with appropriate tags
+```
+
+## Folder Structure
+
+```
+claude-self-reflect/
+├── mcp-server/           # Python MCP server using FastMCP
+│   ├── src/              # Main server source code
+│   ├── pyproject.toml    # Python package configuration
+│   └── run-mcp.sh        # MCP startup script
+├── scripts/              # Import and utility scripts
+│   ├── import-*.py       # Various import scripts
+│   └── test-*.py         # Test scripts
+├── .claude/agents/       # Claude sub-agents for specialized tasks
+├── config/               # Configuration files
+├── data/                 # Qdrant data storage
+├── docs/                 # Documentation
+└── archived/             # Archived code (TypeScript implementation)
 ```
 
 ## Project Rules

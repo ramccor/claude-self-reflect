@@ -1,0 +1,50 @@
+{
+  "name": "claude-self-reflect",
+  "version": "2.0.0",
+  "description": "Give Claude perfect memory of all your conversations - Installation wizard for Python MCP server",
+  "keywords": [
+    "claude",
+    "mcp",
+    "model-context-protocol",
+    "semantic-search",
+    "conversation-memory",
+    "qdrant",
+    "vector-search",
+    "ai-memory",
+    "claude-code"
+  ],
+  "homepage": "https://github.com/ramakay/claude-self-reflect#readme",
+  "bugs": {
+    "url": "https://github.com/ramakay/claude-self-reflect/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ramakay/claude-self-reflect.git"
+  },
+  "license": "MIT",
+  "author": "Claude-Self-Reflect Contributors",
+  "type": "module",
+  "bin": {
+    "claude-self-reflect": "./installer/cli.js"
+  },
+  "files": [
+    "installer/*.js",
+    "mcp-server/src/**/*.py",
+    "mcp-server/pyproject.toml",
+    "mcp-server/run-mcp.sh",
+    "scripts/import-*.py",
+    ".claude/agents/*.md",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "postinstall": "node installer/postinstall.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  }
+}

@@ -1,0 +1,52 @@
+# Development files
+*.log
+*.pyc
+__pycache__/
+.env
+.env.*
+venv/
+.venv/
+build/
+dist/
+*.egg-info/
+.pytest_cache/
+
+# Test files
+test-*/
+**/test_*.py
+**/test-*.js
+
+# Development directories
+archived/
+data/
+config/
+docs/
+qdrant_storage/
+
+# Git files
+.git/
+.gitignore
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+node_modules/
+package-lock.json
+
+# Docker files
+docker-compose*.yaml
+Dockerfile*
+
+# Scripts we don't want to include
+scripts/publish-npm.sh
+scripts/test-*.py
+scripts/fixes/
+scripts/setup/

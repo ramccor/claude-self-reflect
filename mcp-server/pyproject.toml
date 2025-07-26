@@ -1,11 +1,11 @@
 [project]
-name = "claude-reflect"
+name = "claude-self-reflect-mcp"
 version = "0.1.0"
-description = "MCP server for Claude reflection with memory decay"
+description = "MCP server for Claude self-reflection with memory decay"
 # readme = "README.md"
 requires-python = ">=3.10"
 authors = [
-    { name = "Claude Reflect Team" }
+    { name = "Claude Self Reflect Team" }
 ]
 dependencies = [
     "fastmcp>=0.0.7",
@@ -17,7 +17,10 @@ dependencies = [
 ]
 
 [project.scripts]
-claude-reflect = "claude_reflect.__main__:main"
+claude-self-reflect-mcp = "src.__main__:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
 
 [build-system]
 requires = ["hatchling"]
