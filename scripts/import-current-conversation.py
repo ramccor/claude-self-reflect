@@ -16,8 +16,9 @@ def main():
     # Import just the current conversation
     importer = VoyageConversationImporter()
     
-    project_path = "/Users/ramakrishnanannaswamy/.claude/projects/-Users-ramakrishnanannaswamy-memento-stack"
-    target_file = "a2ae66a2-41f5-4b07-ab8b-353b5174af34.jsonl"
+    # Example: Update these to your project path and file
+    project_path = os.path.expanduser("~/.claude/projects/your-project-name")
+    target_file = "your-conversation-id.jsonl"
     
     print(f"Importing current conversation: {target_file}")
     

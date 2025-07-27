@@ -95,8 +95,19 @@ async function doctor() {
   console.log('\n💡 Run "claude-self-reflect setup" to fix any issues');
 }
 
+const ASCII_ART = `
+  ____  _____ _____ _     _____ ____ _____ 
+ |  _ \\| ____|  ___| |   | ____/ ___|_   _|
+ | |_) |  _| | |_  | |   |  _|| |     | |  
+ |  _ <| |___|  _| | |___| |__| |___  | |  
+ |_| \\_\\_____|_|   |_____|_____\\____| |_|  
+                                            
+         Memory that learns and forgets
+`;
+
 function help() {
-  console.log('Claude Self-Reflect - Perfect memory for Claude\n');
+  console.log(ASCII_ART);
+  console.log('\nClaude Self-Reflect - Perfect memory for Claude\n');
   console.log('Usage: claude-self-reflect <command> [options]\n');
   console.log('Commands:');
   

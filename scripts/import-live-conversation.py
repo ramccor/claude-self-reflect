@@ -13,7 +13,7 @@ import requests
 
 # Configuration
 QDRANT_URL = "http://localhost:6333"
-VOYAGE_API_KEY = os.getenv("VOYAGE_KEY", "pa-wdTYGObaxhs-XFKX2r7WCczRwEVNb9eYMTSO3yrQhZI")
+VOYAGE_API_KEY = os.getenv("VOYAGE_KEY")
 VOYAGE_API_URL = "https://api.voyageai.com/v1/embeddings"
 
 @backoff.on_exception(backoff.expo, Exception, max_tries=3)
@@ -43,7 +43,8 @@ def import_conversation(file_path):
     client = QdrantClient(url=QDRANT_URL)
     
     # Determine collection name
-    project_path = "/Users/ramakrishnanannaswamy/memento-stack"
+    # Example: Update to your project path
+    project_path = os.path.expanduser("~/your-project-path")
     project_hash = hashlib.md5(project_path.encode()).hexdigest()[:8]
     collection_name = f"conv_{project_hash}_voyage"
     
@@ -138,7 +139,8 @@ def import_conversation(file_path):
     print(f"\nCollection {collection_name} now has {info.points_count} points")
 
 def main():
-    file_path = os.path.expanduser("~/.claude/projects/-Users-ramakrishnanannaswamy-memento-stack/2bb5f256-bc0a-4a29-8807-f796a463fade.jsonl")
+    # Example: Update to your conversation file path
+    file_path = os.path.expanduser("~/.claude/projects/your-project/your-conversation-id.jsonl")
     
     if not os.path.exists(file_path):
         print(f"File not found: {file_path}")
