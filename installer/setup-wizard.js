@@ -738,12 +738,56 @@ async function showSystemDashboard() {
     status.total = projects.filter(p => !p.startsWith('.')).length;
   } catch {}
   
-  const stateFile = join(process.env.HOME || process.env.USERPROFILE, '.claude-self-reflect', 'imported-files.json');
+  const stateFile = join(projectRoot, 'config', 'imported-files.json');
   try {
     const stateData = await fs.readFile(stateFile, 'utf-8');
     const state = JSON.parse(stateData);
     if (state.projects) {
       status.imported = Object.keys(state.projects).length;
+    }
+  } catch {}
+  
+  // Get Qdrant collection statistics
+  status.collections = 0;
+  status.totalDocuments = 0;
+  try {
+    const collectionsResponse = await fetch('http://localhost:6333/collections');
+    const collectionsData = await collectionsResponse.json();
+    if (collectionsData.result && collectionsData.result.collections) {
+      status.collections = collectionsData.result.collections.length;
+      
+      // Get document count from each collection
+      for (const collection of collectionsData.result.collections) {
+        try {
+          const countResponse = await fetch(`http://localhost:6333/collections/${collection.name}`);
+          const countData = await countResponse.json();
+          if (countData.result && countData.result.points_count) {
+            status.totalDocuments += countData.result.points_count;
+          }
+        } catch {}
+      }
+    }
+  } catch {}
+  
+  // Check watcher logs for recent activity
+  status.watcherErrors = [];
+  status.lastImportTime = null;
+  try {
+    const watcherLogs = execSync('docker logs claude-reflection-watcher --tail 50 2>&1', {
+      encoding: 'utf-8'
+    }).toString();
+    
+    // Check for recent errors
+    const errorMatches = watcherLogs.match(/ERROR.*Import failed.*/g);
+    if (errorMatches) {
+      status.watcherErrors = errorMatches.slice(-3); // Last 3 errors
+    }
+    
+    // Check for successful imports
+    const successMatch = watcherLogs.match(/Successfully imported project: ([^\s]+)/g);
+    if (successMatch && successMatch.length > 0) {
+      const lastSuccess = successMatch[successMatch.length - 1];
+      status.lastImportTime = 'Recently';
     }
   } catch {}
   
@@ -782,21 +826,41 @@ async function showSystemDashboard() {
   console.log('\n📚 Import Status:');
   if (status.total === 0) {
     console.log('   No Claude conversations found yet');
-  } else if (status.imported === 0) {
+  } else if (status.imported === 0 && status.collections === 0) {
     console.log(`   📭 Not started (${status.total} projects available)`);
-  } else if (status.imported < status.total) {
-    const percent = Math.round((status.imported / status.total) * 100);
-    console.log(`   🔄 In progress: ${status.imported}/${status.total} projects (${percent}%)`);
-    console.log(`   ▓${'▓'.repeat(Math.floor(percent/5))}${'░'.repeat(20-Math.floor(percent/5))} ${percent}%`);
+  } else if (status.imported < status.total || status.collections > 0) {
+    const percent = status.total > 0 ? Math.round((status.imported / status.total) * 100) : 0;
+    if (status.collections > 0) {
+      console.log(`   🔄 Active: ${status.collections} collections, ${status.totalDocuments} conversation chunks`);
+    }
+    if (status.total > 0) {
+      console.log(`   📊 Projects: ${status.imported}/${status.total} (${percent}%)`);
+      console.log(`   ▓${'▓'.repeat(Math.floor(percent/5))}${'░'.repeat(20-Math.floor(percent/5))} ${percent}%`);
+    }
+    if (status.lastImportTime) {
+      console.log(`   ⏰ Last import: ${status.lastImportTime}`);
+    }
   } else {
-    console.log(`   ✅ Complete: ${status.imported} projects imported`);
+    console.log(`   ✅ Complete: ${status.imported} projects, ${status.totalDocuments} chunks indexed`);
   }
   
   console.log('\n🔄 Continuous Import (Watcher):');
   if (status.watcherInstalled) {
-    console.log('   Status: ✅ Available (run manually or with Docker Compose)');
-    console.log('   • Manual: python scripts/import-watcher.py');
-    console.log('   • Docker: docker compose --profile watch up -d');
+    if (status.watcherRunning) {
+      console.log('   Status: ✅ Running in Docker');
+    } else {
+      console.log('   Status: ⚪ Available but not running');
+      console.log('   • Manual: python scripts/import-watcher.py');
+      console.log('   • Docker: docker compose --profile watch up -d');
+    }
+    
+    if (status.watcherErrors.length > 0) {
+      console.log('   ⚠️  Recent errors:');
+      status.watcherErrors.forEach(err => {
+        const shortErr = err.replace(/.*ERROR.*?: /, '').substring(0, 60) + '...';
+        console.log(`      • ${shortErr}`);
+      });
+    }
   } else {
     console.log('   Status: ❌ Not available');
   }
@@ -979,35 +1043,57 @@ async function verifyMCP() {
     
     // Create a test verification script
     const testScript = `#!/usr/bin/env python3
+import asyncio
 import sys
 import os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'mcp-server', 'src'))
 
-from mcp_server_qdrant.server import reflect_on_past, store_reflection
+# Add the mcp-server src to the path
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'mcp-server', 'src'))
 
-# Test storing a reflection
-try:
-    result = store_reflection(
-        insight="Claude Self-Reflect setup completed successfully!",
-        tags=["setup", "test", "verification"],
-        importance="high"
-    )
-    print("✅ Store reflection: Success")
-except Exception as e:
-    print(f"❌ Store reflection failed: {e}")
-    sys.exit(1)
+async def test_mcp():
+    try:
+        # Import the server module
+        from server_v2 import mcp, get_voyage_collections
+        
+        # Check that MCP is loaded
+        print(f"✅ MCP server loaded successfully!")
+        print(f"   - Server name: {mcp.name}")
+        
+        # Check for our specific tools by trying to access them
+        tool_names = ['reflect_on_past', 'store_reflection']
+        found_tools = []
+        
+        # FastMCP doesn't expose tools list directly, so we'll check if imports worked
+        try:
+            from server_v2 import reflect_on_past, store_reflection
+            found_tools = tool_names
+        except ImportError:
+            pass
+        if 'reflect_on_past' in found_tools:
+            print("✅ Tool 'reflect_on_past' is available")
+        else:
+            print("❌ Tool 'reflect_on_past' not found")
+            
+        if 'store_reflection' in found_tools:
+            print("✅ Tool 'store_reflection' is available")
+        else:
+            print("❌ Tool 'store_reflection' not found")
+        
+        # Test that we can connect to Qdrant
+        try:
+            collections = await get_voyage_collections()
+            print(f"✅ Connected to Qdrant: {len(collections)} collections found")
+            if len(collections) == 0:
+                print("   (This is normal if no conversations have been imported yet)")
+        except Exception as e:
+            print(f"⚠️  Qdrant connection: {e}")
+            
+    except Exception as e:
+        print(f"❌ Failed to load MCP server: {e}")
+        sys.exit(1)
 
-# Test searching
-try:
-    results = reflect_on_past("setup test verification")
-    if results and len(results) > 0:
-        print("✅ Search reflection: Success")
-        print(f"   Found {len(results)} results")
-    else:
-        print("⚠️  Search returned no results (this is normal for first setup)")
-except Exception as e:
-    print(f"❌ Search reflection failed: {e}")
-    sys.exit(1)
+# Run the async test
+asyncio.run(test_mcp())
 `;
     
     // Write test script

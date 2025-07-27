@@ -31,7 +31,7 @@ BATCH_SIZE = int(os.getenv("BATCH_SIZE", "50"))
 CHUNK_SIZE = int(os.getenv("CHUNK_SIZE", "10"))
 STREAMING_BUFFER_SIZE = 100  # Process every 100 messages
 RATE_LIMIT_DELAY = 0.1
-EMBEDDING_MODEL = "voyage-3.5-lite"
+EMBEDDING_MODEL = "voyage-3-large"
 EMBEDDING_DIMENSIONS = 1024
 VOYAGE_API_URL = "https://api.voyageai.com/v1/embeddings"
 
@@ -244,10 +244,14 @@ class StreamingVoyageImporter:
                 # Create points
                 points = []
                 for chunk, embedding in zip(batch, embeddings):
+                    # Include both text and metadata in payload
+                    payload = chunk['metadata'].copy()
+                    payload['text'] = chunk['text']
+                    
                     points.append(PointStruct(
                         id=chunk['id'],
                         vector=embedding,
-                        payload=chunk['metadata']
+                        payload=payload
                     ))
                 
                 # Upsert to Qdrant
@@ -344,32 +348,19 @@ def main():
             importer.import_large_file(str(file_path), project_name)
             files_processed += 1
     else:
-        # Fallback to default behavior with dynamic path detection
+        # No specific project specified - scan for all projects
         base_path = os.getenv("LOGS_PATH", "/logs")
         if os.path.exists(base_path):
-            # Use Docker paths
-            large_files = [
-                (f"{base_path}/-Users-ramakrishnanannaswamy-memento-stack/2144c5bb-eab8-416b-89b9-5fffb2e1a543.jsonl", 
-                 "-Users-ramakrishnanannaswamy-memento-stack"),
-                (f"{base_path}/-Users-ramakrishnanannaswamy-memento-stack/40c86645-1bbf-446b-9b5b-ad31989f3655.jsonl", 
-                 "-Users-ramakrishnanannaswamy-memento-stack")
-            ]
-        else:
-            # Use local paths
-            large_files = [
-                ("/Users/ramakrishnanannaswamy/.claude/projects/-Users-ramakrishnanannaswamy-memento-stack/2144c5bb-eab8-416b-89b9-5fffb2e1a543.jsonl", 
-                 "-Users-ramakrishnanannaswamy-memento-stack"),
-                ("/Users/ramakrishnanannaswamy/.claude/projects/-Users-ramakrishnanannaswamy-memento-stack/40c86645-1bbf-446b-9b5b-ad31989f3655.jsonl", 
-                 "-Users-ramakrishnanannaswamy-memento-stack")
-            ]
-        
-        for file_path, project_name in large_files:
-            if os.path.exists(file_path):
-                file_size_mb = os.path.getsize(file_path) / (1024 * 1024)
-                logger.info(f"Processing {os.path.basename(file_path)} ({file_size_mb:.1f} MB)")
-                importer.import_large_file(file_path, project_name)
-            else:
-                logger.warning(f"File not found: {file_path}")
+            # Scan for all project directories
+            for project_dir in Path(base_path).iterdir():
+                if project_dir.is_dir() and not project_dir.name.startswith('.'):
+                    # Look for JSONL files in this project
+                    jsonl_files = list(project_dir.glob("*.jsonl"))
+                    if jsonl_files:
+                        for jsonl_file in jsonl_files:
+                            file_size_mb = jsonl_file.stat().st_size / (1024 * 1024)
+                            logger.info(f"Processing {jsonl_file.name} ({file_size_mb:.1f} MB) from project {project_dir.name}")
+                            importer.import_large_file(str(jsonl_file), project_dir.name)
     
     logger.info(f"Streaming import complete! Total chunks: {importer.total_imported}")
 

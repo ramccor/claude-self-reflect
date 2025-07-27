@@ -10,11 +10,21 @@ from fastmcp import FastMCP, Context
 from pydantic import BaseModel, Field
 from qdrant_client import AsyncQdrantClient, models
 from qdrant_client.models import (
-    PointStruct, VectorParams, Distance, 
-    Query, Formula, Expression, MultExpression,
-    ExpDecayExpression, DecayParamsExpression,
-    SearchRequest, NamedQuery
+    PointStruct, VectorParams, Distance
 )
+try:
+    from qdrant_client.models import (
+        Query, Formula, Expression, MultExpression,
+        ExpDecayExpression, DecayParamsExpression,
+        SearchRequest, NamedQuery
+    )
+    NATIVE_DECAY_AVAILABLE = True
+except ImportError:
+    # Fallback for older qdrant-client versions
+    NATIVE_DECAY_AVAILABLE = False
+    Query = Formula = Expression = MultExpression = None
+    ExpDecayExpression = DecayParamsExpression = None
+    SearchRequest = NamedQuery = None
 import voyageai
 from dotenv import load_dotenv
 
@@ -83,7 +93,7 @@ async def reflect_on_past(
     ctx: Context,
     query: str = Field(description="The search query to find semantically similar conversations"),
     limit: int = Field(default=5, description="Maximum number of results to return"),
-    min_score: float = Field(default=0.7, description="Minimum similarity score (0-1)"),
+    min_score: float = Field(default=0.3, description="Minimum similarity score (0-1)"),
     use_decay: Union[int, str] = Field(default=-1, description="Apply time-based decay: 1=enable, 0=disable, -1=use environment default (accepts int or str)")
 ) -> str:
     """Search for relevant past conversations using semantic search with optional time decay."""
@@ -122,7 +132,7 @@ async def reflect_on_past(
         # Search each collection with native Qdrant decay
         for collection_name in voyage_collections:
             try:
-                if should_use_decay:
+                if should_use_decay and NATIVE_DECAY_AVAILABLE:
                     # Build the query with native Qdrant decay formula
                     query_obj = Query(
                         nearest=query_embedding,

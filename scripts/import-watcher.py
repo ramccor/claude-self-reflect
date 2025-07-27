@@ -80,8 +80,9 @@ class ImportWatcher:
             logger.info(f"Starting import for project: {project_path.name}")
             
             # Run the streaming importer
+            # Pass only the project directory name, not the full path
             result = subprocess.run(
-                ["python", IMPORTER_SCRIPT, str(project_path)],
+                ["python", IMPORTER_SCRIPT, "--project", project_path.name],
                 capture_output=True,
                 text=True,
                 timeout=300  # 5 minute timeout
