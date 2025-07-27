@@ -13,11 +13,30 @@ Your conversations become searchable. Your decisions stay remembered. Your conte
 
 ## Install
 
+### Quick Start (Recommended)
 ```bash
-npm install -g claude-self-reflect && claude-self-reflect setup
+# Step 1: Get your free Voyage AI key
+# Sign up at https://www.voyageai.com/ - it takes 30 seconds
+
+# Step 2: Install and run automatic setup
+npm install -g claude-self-reflect
+claude-self-reflect setup --voyage-key=YOUR_ACTUAL_KEY_HERE
+
+# That's it! The setup will:
+# ✅ Configure everything automatically
+# ✅ Install the MCP in Claude Code  
+# ✅ Start monitoring for new conversations
+# ✅ Verify the reflection tools work
 ```
 
-5 minutes. That's it.
+### Alternative: Local Mode (No API Key)
+```bash
+npm install -g claude-self-reflect
+claude-self-reflect setup --local
+```
+*Note: Local mode uses basic embeddings. Semantic search won't be as good.*
+
+5 minutes. Everything automatic. Just works.
 
 ## The Magic
 
@@ -104,9 +123,11 @@ Want to customize? See [Configuration Guide](docs/installation-guide.md).
 If you must know:
 
 - **Vector DB**: Qdrant (local, your data stays yours)
-- **Embeddings**: Voyage AI (200M free tokens/month)
+- **Embeddings**: Voyage AI (200M free tokens/month)*
 - **MCP Server**: Python + FastMCP
 - **Search**: Semantic similarity with time decay
+
+*We chose Voyage AI for their excellent cost-effectiveness ([66.1% accuracy at one of the lowest costs](https://research.aimultiple.com/embedding-models/#:~:text=Cost%2Deffective%20alternatives%3A%20Voyage%2D3.5%2Dlite%20delivered%20solid%20accuracy%20(66.1%25)%20at%20one%20of%20the%20lowest%20costs%2C%20making%20it%20attractive%20for%20budget%2Dsensitive%20implementations.)). We are not affiliated with Voyage AI.
 
 ### Want More Details?
 
@@ -120,6 +141,37 @@ If you must know:
 - [Troubleshooting Guide](docs/troubleshooting.md)
 - [GitHub Issues](https://github.com/ramakay/claude-self-reflect/issues)
 - [Discussions](https://github.com/ramakay/claude-self-reflect/discussions)
+
+## Contributing
+
+See our [Contributing Guide](CONTRIBUTING.md) for development setup and guidelines.
+
+### Releasing New Versions (Maintainers)
+
+Since our GitHub Actions automatically publish to npm, the release process is simple:
+
+```bash
+# 1. Ensure you're logged into GitHub CLI
+gh auth login  # Only needed first time
+
+# 2. Create and push a new tag
+git tag v2.3.0  # Use appropriate version number
+git push origin v2.3.0
+
+# 3. Create GitHub release (this triggers npm publish)
+gh release create v2.3.0 \
+  --title "Release v2.3.0" \
+  --notes-file CHANGELOG.md \
+  --draft=false
+
+# The GitHub Action will automatically:
+# - Build the package
+# - Run tests
+# - Publish to npm
+# - Update release assets
+```
+
+Monitor the release at: https://github.com/ramakay/claude-self-reflect/actions
 
 ---
 

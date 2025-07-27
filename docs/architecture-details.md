@@ -4,7 +4,41 @@ For those who want to understand the plumbing.
 
 ## System Architecture
 
-![Architecture Diagram](diagrams/architecture.png)
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                     Claude Code/Desktop                         │
+│                        (MCP Client)                             │
+└────────────────────────────┬───────────────────────────────────┘
+                             │ MCP Protocol
+                             ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                       MCP Server                                │
+│                    (Python FastMCP)                             │
+│  ┌─────────────────┐        ┌──────────────────────┐          │
+│  │ store_reflection │        │  reflect_on_past     │          │
+│  └─────────────────┘        └──────────────────────┘          │
+└────────────────────────────┬───────────────────────────────────┘
+                             │
+                             ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                    Qdrant Vector Database                       │
+│  ┌─────────────────────────────────────────────────────────┐  │
+│  │  Collections: conv_<project_hash>_voyage                │  │
+│  │  - Conversation embeddings (1024 dims)                  │  │
+│  │  - Metadata (timestamp, project, context)               │  │
+│  └─────────────────────────────────────────────────────────┘  │
+└────────────────────────────┬───────────────────────────────────┘
+                             │
+                             ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                     Import Pipeline                             │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────────┐  │
+│  │  Read    │→ │  Chunk   │→ │ Embed    │→ │ Store in     │  │
+│  │  JSONL   │  │  (500    │  │ (Voyage  │  │ Qdrant       │  │
+│  │  Files   │  │  tokens) │  │  AI)     │  │              │  │
+│  └──────────┘  └──────────┘  └──────────┘  └──────────────┘  │
+└─────────────────────────────────────────────────────────────────┘
+```
 
 The system consists of four main components:
 
@@ -32,20 +66,76 @@ Python service that processes conversation logs:
 
 ## Data Flow
 
-1. **Import Flow**
-   - Claude saves conversations to `~/.claude/projects/*/conversations/*.jsonl`
-   - Import scripts read these files
-   - Chunk conversations into manageable pieces
-   - Generate embeddings via Voyage AI
-   - Store in Qdrant with metadata (timestamp, project, etc.)
+### 1. Import Flow
 
-2. **Search Flow**
-   - User asks Claude about past conversations
-   - MCP server receives search request
-   - Converts query to embedding
-   - Searches Qdrant for similar vectors
-   - Returns relevant conversation chunks
-   - Claude presents results in context
+```
+~/.claude/projects/*/conversations/*.jsonl
+                    │
+                    ▼
+            ┌──────────────┐
+            │ Import Script│
+            └──────┬───────┘
+                   │
+        ┌──────────┴──────────┐
+        ▼                     ▼
+┌─────────────────┐   ┌─────────────────┐
+│ Parse JSONL     │   │ Extract         │
+│ Messages        │   │ Metadata        │
+└────────┬────────┘   └────────┬────────┘
+         │                     │
+         └──────────┬──────────┘
+                    ▼
+           ┌──────────────┐
+           │ Chunk Text   │
+           │ (500 tokens) │
+           └──────┬───────┘
+                  ▼
+           ┌──────────────┐
+           │ Voyage AI    │
+           │ Embeddings   │
+           └──────┬───────┘
+                  ▼
+           ┌──────────────┐
+           │ Store in     │
+           │ Qdrant       │
+           └──────────────┘
+```
+
+### 2. Search Flow
+
+```
+"What did we discuss about authentication?"
+                    │
+                    ▼
+            ┌──────────────┐
+            │ MCP Server   │
+            │ reflect_on_  │
+            │ past()       │
+            └──────┬───────┘
+                   ▼
+            ┌──────────────┐
+            │ Generate     │
+            │ Query        │
+            │ Embedding    │
+            └──────┬───────┘
+                   ▼
+            ┌──────────────┐
+            │ Search       │
+            │ Qdrant       │
+            │ (Similarity) │
+            └──────┬───────┘
+                   ▼
+            ┌──────────────┐
+            │ Return Top   │
+            │ K Results    │
+            └──────┬───────┘
+                   ▼
+            ┌──────────────┐
+            │ Format &     │
+            │ Present to   │
+            │ Claude       │
+            └──────────────┘
+```
 
 ## Project Structure
 
@@ -92,9 +182,82 @@ claude-self-reflect/
 - API keys only used for embedding generation
 - Conversations never leave your machine
 
+## Additional Details
+
+### Import Process Workflow
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                  Import Process                         │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  1. Scan ~/.claude/projects/*/conversations/           │
+│     └─> Find all .jsonl files                         │
+│                                                         │
+│  2. For each JSONL file:                              │
+│     ├─> Parse conversation messages                    │
+│     ├─> Extract project metadata                       │
+│     └─> Track processing progress                      │
+│                                                         │
+│  3. Chunk conversations:                               │
+│     ├─> Split into 500-token segments                  │
+│     ├─> Preserve context boundaries                    │
+│     └─> Add overlap for continuity                     │
+│                                                         │
+│  4. Generate embeddings:                               │
+│     ├─> Batch API calls to Voyage AI                   │
+│     ├─> Handle rate limits gracefully                  │
+│     └─> Cache for efficiency                           │
+│                                                         │
+│  5. Store in Qdrant:                                   │
+│     ├─> Create/update collection                       │
+│     ├─> Insert vectors with metadata                   │
+│     └─> Build index for fast retrieval                 │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Semantic Search Operation
+
+```
+┌─────────────────────────────────────────────────────────┐
+│              Semantic Search Process                    │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Query: "authentication discussions"                   │
+│    │                                                    │
+│    ▼                                                    │
+│  ┌─────────────────────────────────────┐              │
+│  │ 1. Preprocess Query                 │              │
+│  │    - Normalize text                 │              │
+│  │    - Extract key concepts           │              │
+│  └──────────────┬──────────────────────┘              │
+│                 ▼                                       │
+│  ┌─────────────────────────────────────┐              │
+│  │ 2. Generate Query Embedding         │              │
+│  │    - Voyage AI API call             │              │
+│  │    - 1024-dimensional vector        │              │
+│  └──────────────┬──────────────────────┘              │
+│                 ▼                                       │
+│  ┌─────────────────────────────────────┐              │
+│  │ 3. Vector Similarity Search         │              │
+│  │    - Cosine similarity              │              │
+│  │    - Cross-collection search        │              │
+│  │    - Top-K retrieval                │              │
+│  └──────────────┬──────────────────────┘              │
+│                 ▼                                       │
+│  ┌─────────────────────────────────────┐              │
+│  │ 4. Post-process Results             │              │
+│  │    - Rank by relevance              │              │
+│  │    - Deduplicate                    │              │
+│  │    - Format for presentation        │              │
+│  └──────────────┬──────────────────────┘              │
+│                 ▼                                       │
+│  Results: Relevant conversation chunks                  │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
 ## See Also
 
-- [Data Flow Diagram](diagrams/data-flow.png) - Detailed flow visualization
-- [Import Process](diagrams/import-process.png) - Step-by-step import workflow
-- [Search Operation](diagrams/search-operation.png) - How semantic search works
 - [Components Guide](components.md) - Deep dive into each component

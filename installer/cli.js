@@ -18,7 +18,9 @@ async function setup() {
   console.log('🚀 Claude Self-Reflect Setup Wizard\n');
   
   const setupPath = join(__dirname, 'setup-wizard.js');
-  const child = spawn('node', [setupPath], { stdio: 'inherit' });
+  // Pass along any command line arguments after 'setup'
+  const args = process.argv.slice(3); // Skip node, script, and 'setup'
+  const child = spawn('node', [setupPath, ...args], { stdio: 'inherit' });
   
   child.on('exit', (code) => {
     process.exit(code || 0);
@@ -95,12 +97,20 @@ async function doctor() {
 
 function help() {
   console.log('Claude Self-Reflect - Perfect memory for Claude\n');
-  console.log('Usage: claude-self-reflect <command>\n');
+  console.log('Usage: claude-self-reflect <command> [options]\n');
   console.log('Commands:');
   
   for (const [cmd, desc] of Object.entries(commands)) {
     console.log(`  ${cmd.padEnd(10)} ${desc}`);
   }
+  
+  console.log('\nSetup Options:');
+  console.log('  --voyage-key=<key>   Provide Voyage AI API key (recommended)');
+  console.log('  --local              Run in local mode without API key');
+  
+  console.log('\nExamples:');
+  console.log('  claude-self-reflect setup --voyage-key=pa-1234567890');
+  console.log('  claude-self-reflect setup --local');
   
   console.log('\nFor more information: https://github.com/ramakay/claude-self-reflect');
 }

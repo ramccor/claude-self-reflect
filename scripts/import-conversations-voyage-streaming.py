@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 # Configuration
 QDRANT_URL = os.getenv("QDRANT_URL", "http://localhost:6333")
 STATE_FILE = os.getenv("STATE_FILE", "./config-isolated/imported-files.json")
-LOGS_DIR = os.getenv("LOGS_DIR", "/Users/ramakrishnanannaswamy/.claude/projects")
+LOGS_DIR = os.getenv("LOGS_DIR", os.path.expanduser("~/.claude/projects"))
 VOYAGE_API_KEY = os.getenv("VOYAGE_KEY_2") or os.getenv("VOYAGE_KEY")
 BATCH_SIZE = int(os.getenv("BATCH_SIZE", "50"))
 CHUNK_SIZE = int(os.getenv("CHUNK_SIZE", "10"))

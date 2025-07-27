@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # Qdrant vector database - the heart of semantic search
   qdrant:
@@ -14,10 +12,11 @@ services:
       - QDRANT__SERVICE__HTTP_PORT=6333
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:6333/readyz"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:6333/readyz"]
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 20s
     mem_limit: ${QDRANT_MEMORY:-1g}
     memswap_limit: ${QDRANT_MEMORY:-1g}
 
@@ -37,8 +36,9 @@ services:
     environment:
       - QDRANT_URL=http://qdrant:6333
       - STATE_FILE=/config/imported-files.json
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - VOYAGE_API_KEY=${VOYAGE_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - VOYAGE_API_KEY=${VOYAGE_API_KEY:-}
+      - VOYAGE_KEY=${VOYAGE_KEY:-}
       - USE_LOCAL_EMBEDDINGS=${USE_LOCAL_EMBEDDINGS:-false}
       - EMBEDDING_MODEL=${EMBEDDING_MODEL:-voyage-3}
       - BATCH_SIZE=${BATCH_SIZE:-50}
@@ -55,8 +55,7 @@ services:
       dockerfile: Dockerfile.watcher
     container_name: claude-reflection-watcher
     depends_on:
-      qdrant:
-        condition: service_healthy
+      - qdrant
     volumes:
       - ${CLAUDE_LOGS_PATH:-~/.claude/projects}:/logs:ro
       - ./config:/config
@@ -64,8 +63,9 @@ services:
     environment:
       - QDRANT_URL=http://qdrant:6333
       - STATE_FILE=/config/imported-files.json
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - VOYAGE_API_KEY=${VOYAGE_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - VOYAGE_API_KEY=${VOYAGE_API_KEY:-}
+      - VOYAGE_KEY=${VOYAGE_KEY:-}
       - USE_LOCAL_EMBEDDINGS=${USE_LOCAL_EMBEDDINGS:-false}
       - EMBEDDING_MODEL=${EMBEDDING_MODEL:-voyage-3}
       - WATCH_INTERVAL=${WATCH_INTERVAL:-60}

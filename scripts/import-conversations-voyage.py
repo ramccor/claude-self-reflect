@@ -19,8 +19,8 @@ import backoff
 
 # Configuration
 QDRANT_URL = os.getenv("QDRANT_URL", "http://localhost:6333")
-LOGS_DIR = os.getenv("LOGS_DIR", "/logs")
-STATE_FILE = os.getenv("STATE_FILE", "/config/imported-files.json")
+LOGS_DIR = os.getenv("LOGS_DIR", os.path.expanduser("~/.claude/projects"))
+STATE_FILE = os.getenv("STATE_FILE", os.path.expanduser("~/.claude-self-reflect/imported-files.json"))
 VOYAGE_API_KEY = os.getenv("VOYAGE_KEY-2") or os.getenv("VOYAGE_KEY")
 BATCH_SIZE = int(os.getenv("BATCH_SIZE", "50"))  # Voyage supports batch embedding
 CHUNK_SIZE = int(os.getenv("CHUNK_SIZE", "10"))  # Can use larger chunks with 32k token limit
@@ -362,6 +362,8 @@ class VoyageConversationImporter:
         
         if not os.path.exists(projects_dir):
             logger.error(f"Claude projects directory not found: {projects_dir}")
+            logger.error("This usually means Claude Code hasn't created any projects yet.")
+            logger.error("Please open Claude Code and create a conversation first.")
             return
         
         # Get list of projects
